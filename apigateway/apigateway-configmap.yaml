@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apigateway-config
+  namespace: sj-lab
+data:
+  application.yml: |
+    server:
+      port: 8100
+    spring:
+      application:
+        name: apigateway-service
+      profiles:
+        active: prod
+      cloud:
+        gateway:
+          default-filters:
+            - name: GlobalFilter
+              args:
+                baseMessage: Spring Cloud Gateway Global Filter
+                preLogger: true
+                postLogger: true
+          routes:
+            - id: mapservice-rest
+              uri: lb://MAPSERVICE-REST
+              predicates:
+                - Path=/map/**
+              filters:
+                - name: CustomFilter
+            - id: my-second-service
+              uri: http://localhost:8082/
+              predicates:
+                - Path=/second-service/**
+              filters:
+                - name: CustomFilter
+                - name: LoggingFilter
+                  args:
+                    baseMessage: Hi, there.
+                    preLogger: true
+                    postLogger: true
+
+  application-local.yml: |
+    eureka:
+      client:
+        register-with-eureka: true
+        fetch-registry: true
+        service-url:
+          defaultZone: http://localhost:8761/eureka
+
+  application-prod.yml: |
+    eureka:
+      client:
+        register-with-eureka: true
+        fetch-registry: true
+        service-url:
+          defaultZone: https://eureka.sj-lab.co.kr/eureka

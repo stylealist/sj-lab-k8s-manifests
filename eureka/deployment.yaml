@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: discoveryserver
+  namespace: sj-lab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: discoveryserver
+  template:
+    metadata:
+      labels:
+        app: discoveryserver
+    spec:
+      imagePullSecrets:
+        - name: ncp-registry-secret
+      containers:
+        - name: discoveryserver
+          image: sj-lab-registry.kr.ncr.ntruss.com/sj-lab-discoveryserver:1
+          ports:
+            - containerPort: 8761
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+            - name: SPRING_CONFIG_LOCATION
+              value: "classpath:/,file:/app/config/"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: discoveryserver-config # dep
+
+
