@@ -13,7 +13,7 @@ data:
       application:
         name: discoveryservice
       profiles:
-        active: prod
+        active: prod # test
     management:
       endpoints:
         web:
