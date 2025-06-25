@@ -1,11 +1,19 @@
 replicaCount: 1
 
 image:
-  repository: sj-lab-registry.kr.ncr.ntruss.com/sj-lab-webserver
+  repository: nginx
   tag: latest
   pullPolicy: IfNotPresent
 
-configMapName: nginx-config
+service:
+  type: ClusterIP
+  port: 80
+
+config:
+  nginxConf: |
+    # 여기에 nginx.conf 내용 붙여넣기
+  nginxSetConf: |
+    # 여기에 nginx-set.conf 내용 붙여넣기
 
 volumes:
   webContent: /home/kuber-volume/sj-lab-webserver/html
@@ -14,20 +22,4 @@ volumes:
 
 ingress:
   enabled: true
-  className: nginx
   host: www.sj-lab.co.kr
-  path: /
-  pathType: Prefix
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-  tls:
-    enabled: true
-    secretName: sj-lab-tls
-
-service:
-  type: ClusterIP
-  port: 80
-  targetPort: 80
-  name: sj-lab-webserver-service
-
-resources: {}
