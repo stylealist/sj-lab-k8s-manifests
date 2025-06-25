@@ -12,6 +12,9 @@ spec:
     metadata:
       labels:
         app: apigateway
+      annotations: # ✅ [추가] 변경 감지를 위한 주석 필드 추가
+        configmap-checksum: "REPLACE_WITH_CONFIGMAP_HASH"  # ✅ [추가] configmap 변경 감지용 체크섬
+        service-checksum: "REPLACE_WITH_SERVICE_HASH"      # ✅ [추가] service 변경 감지용 체크섬
     spec:
       imagePullSecrets:
         - name: ncp-registry-secret
