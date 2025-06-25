@@ -20,7 +20,7 @@ spec:
         - name: ncp-registry-secret
       containers:
         - name: discoveryserver
-          image: sj-lab-registry.kr.ncr.ntruss.com/sj-lab-discoveryserver:71
+          image: sj-lab-registry.kr.ncr.ntruss.com/sj-lab-discoveryserver:72
           ports:
             - containerPort: 8761
           env:
