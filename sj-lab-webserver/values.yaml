@@ -1,0 +1,33 @@
+replicaCount: 1
+
+image:
+  repository: sj-lab-registry.kr.ncr.ntruss.com/sj-lab-webserver
+  tag: latest
+  pullPolicy: IfNotPresent
+
+configMapName: nginx-config
+
+volumes:
+  webContent: /home/kuber-volume/sj-lab-webserver/html
+  certs: /home/kuber-set/sj-lab-webserver/certs/letsencrypt
+  errorPages: /home/kuber-set/sj-lab-webserver/error-pages
+
+ingress:
+  enabled: true
+  className: nginx
+  host: www.sj-lab.co.kr
+  path: /
+  pathType: Prefix
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  tls:
+    enabled: true
+    secretName: sj-lab-tls
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+  name: sj-lab-webserver-service
+
+resources: {}

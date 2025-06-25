@@ -1,0 +1,6 @@
+apiVersion: v2
+name: sj-lab-webserver
+description: A Helm chart for deploying NGINX static web server on Kubernetes with Ingress support
+type: application
+version: 1.0.0 # Chart 버전 (헬름 차트 자체의 버전)
+appVersion: "1.0.0" # 실제 앱(NGINX)의 버전 (의미적으로 맞춰주는 용도)
