@@ -1,3 +1,4 @@
+# 해당 파일 배포시에만 gitops
 apiVersion: apps/v1
 kind: Deployment
 metadata:
