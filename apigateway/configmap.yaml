@@ -1,3 +1,4 @@
+# 자동배포 x 수동배포해야함
 apiVersion: v1
 kind: ConfigMap
 metadata:
