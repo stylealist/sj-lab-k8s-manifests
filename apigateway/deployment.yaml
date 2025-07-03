@@ -5,7 +5,7 @@ metadata:
   name: apigateway
   namespace: sj-lab
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: apigateway
