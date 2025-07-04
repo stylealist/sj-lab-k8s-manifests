@@ -6,9 +6,5 @@ metadata:
   labels:
     app: {{ include "discoveryserver.name" . }}
 data:
-  application.yml: |-
-{{ .Values.config.applicationYml | indent 4 }}
-  application-local.yml: |-
-{{ .Values.config.application-local\.yml | indent 4 }}
   application-prod.yml: |-
-{{ .Values.config.application-prod\.yml | indent 4 }}
+{{ .Files.Get "files/application-prod.yml" | indent 4 }}
