@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dashboard-metrics-scraper
+  namespace: {{ .Values.namespace }}
+  labels:
+    k8s-app: dashboard-metrics-scraper
+spec:
+  ports:
+    - port: {{ .Values.service.scraper.port }}
+      targetPort: {{ .Values.service.scraper.targetPort }}
+  selector:
+    k8s-app: dashboard-metrics-scraper

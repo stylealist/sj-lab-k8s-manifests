@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubernetes-dashboard
+  namespace: {{ .Values.namespace }}
+  labels:
+    k8s-app: kubernetes-dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: kubernetes-dashboard
+  template:
+    metadata:
+      labels:
+        k8s-app: kubernetes-dashboard
+    spec:
+      serviceAccountName: kubernetes-dashboard
+      containers:
+        - name: kubernetes-dashboard
+          image: {{ .Values.image.dashboard }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8443
+          args:
+            - --auto-generate-certificates
+            - --namespace={{ .Values.namespace }}
+          volumeMounts:
+            - name: kubernetes-dashboard-certs
+              mountPath: /certs
+            - name: tmp-volume
+              mountPath: /tmp
+          livenessProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /
+              port: 8443
+            initialDelaySeconds: 30
+            timeoutSeconds: 30
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsUser: {{ .Values.securityContext.runAsUser }}
+            runAsGroup: {{ .Values.securityContext.runAsGroup }}
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: kubernetes-dashboard-certs
+          secret:
+            secretName: kubernetes-dashboard-certs
+        - name: tmp-volume
+          emptyDir: {}
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
