@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "discoveryserver.fullname" . }}
+  namespace: sj-lab
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: {{ include "discoveryserver.name" . }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}
+      nodePort: {{ .Values.service.nodePort }}

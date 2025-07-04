@@ -1,0 +1,20 @@
+# values.yaml
+replicaCount: 1
+image:
+  repository: sj-lab-registry.kr.ncr.ntruss.com/sj-lab-discoveryserver
+  tag: "79"
+  pullPolicy: IfNotPresent
+  pullSecrets:
+    - name: ncp-registry-secret
+
+service:
+  type: NodePort
+  port: 8761
+  nodePort: 30087
+
+spring:
+  profile: prod
+
+env:
+  springProfile: prod
+  springConfigLocation: "classpath:/,file:/app/config/"

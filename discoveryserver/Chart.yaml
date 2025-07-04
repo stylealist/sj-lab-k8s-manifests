@@ -1,0 +1,5 @@
+# Chart.yaml
+apiVersion: v2
+name: discoveryserver
+version: 0.1.0
+description: Helm chart for sj-lab-discoveryserver
