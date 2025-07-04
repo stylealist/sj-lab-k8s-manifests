@@ -48,8 +48,12 @@ eureka:
       defaultZone: https://eureka.sj-lab.co.kr/eureka
       #defaultZone: http://www.sj-lab.co.kr/discovery/eureka
   instance:
-    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
     prefer-ip-address: true
+    instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+    #instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    #prefer-ip-address: true
 
 springdoc:
   swagger-ui:
