@@ -1,5 +1,5 @@
 apiVersion: v2
-name: sj-lab-mapservice-chart
+name: mapservice-rest
 description: A Helm chart for deploying Spring Boot mapservice
 type: application
 version: 0.1.0

@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "sj-lab-mapservice-chart.fullname" . }}
+  name: {{ include "mapservice-rest.fullname" . }}
   labels:
-    app: {{ include "sj-lab-mapservice-chart.name" . }}
+    app: {{ include "mapservice-rest.name" . }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ include "sj-lab-mapservice-chart.name" . }}
+      app: {{ include "mapservice-rest.name" . }}
   template:
     metadata:
       labels:
-        app: {{ include "sj-lab-mapservice-chart.name" . }}
+        app: {{ include "mapservice-rest.name" . }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
@@ -29,4 +29,4 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: {{ include "sj-lab-mapservice-chart.fullname" . }}-config
+            name: {{ include "mapservice-rest.fullname" . }}-config
