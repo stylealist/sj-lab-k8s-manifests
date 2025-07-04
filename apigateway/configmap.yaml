@@ -16,7 +16,7 @@ data:
       cloud:
         loadbalancer:
           ribbon:
-            enabled: false
+            enabled: true
         gateway:
           default-filters:
             - name: GlobalFilter
