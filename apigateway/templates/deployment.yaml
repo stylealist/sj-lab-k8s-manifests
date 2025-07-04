@@ -27,7 +27,7 @@ spec:
             - containerPort: {{ .Values.service.port }}
           volumeMounts:
             - name: config-volume
-              mountPath: /config
+              mountPath: /app/config
           env:
             - name: SPRING_CONFIG_LOCATION
               value: "file:/config/"
