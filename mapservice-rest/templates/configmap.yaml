@@ -4,4 +4,4 @@ metadata:
   name: {{ include "mapservice-rest.fullname" . }}-config
 data:
   application.yml: |-
-{{ .Files.Get "files/application.yml" | indent 4 }}
+{{ .Files.Get "files/application-prod.yml" | indent 4 }}
