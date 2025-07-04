@@ -1,0 +1,52 @@
+# values.yaml
+replicaCount: 1
+image:
+  repository: sj-lab-registry.kr.ncr.ntruss.com/sj-lab-apigateway
+  tag: "47"
+  pullPolicy: IfNotPresent
+  pullSecrets:
+    - name: ncp-registry-secret
+
+service:
+  type: NodePort
+  port: 8100
+  nodePort: 30089
+
+config:
+  applicationYml: |-
+    server:
+      port: 8100
+    spring:
+      application:
+        name: apigateway-service
+      profiles:
+        active: prod
+      cloud:
+        loadbalancer:
+          ribbon:
+            enabled: true
+        gateway:
+          default-filters:
+            - name: GlobalFilter
+              args:
+                baseMessage: Spring Cloud Gateway Global Filter
+                preLogger: true
+                postLogger: true
+          routes:
+            - id: mapservice-rest
+              uri: lb://MAPSERVICE-REST
+              predicates:
+                - Path=/map/**
+              filters:
+                - name: CustomFilter
+            - id: my-second-service
+              uri: http://localhost:8082/
+              predicates:
+                - Path=/second-service/**
+              filters:
+                - name: CustomFilter
+                - name: LoggingFilter
+                  args:
+                    baseMessage: Hi, there.
+                    preLogger: true
+                    postLogger: true

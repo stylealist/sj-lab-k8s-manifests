@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "apigateway.fullname" . }}
+  namespace: sj-lab
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "apigateway.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "apigateway.name" . }}
+      annotations:
+        configmap-checksum: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      imagePullSecrets:
+{{- range .Values.image.pullSecrets }}
+        - name: {{ .name }}
+{{- end }}
+      containers:
+        - name: {{ include "apigateway.name" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config
+          env:
+            - name: SPRING_CONFIG_LOCATION
+              value: "file:/config/"
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "apigateway.fullname" . }}-config
