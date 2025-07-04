@@ -49,7 +49,7 @@ eureka:
       #defaultZone: http://www.sj-lab.co.kr/discovery/eureka
   instance:
     prefer-ip-address: true
-    instance-id: ${spring.cloud.client.ip-address}:${spring.application.name}:${server.port}
+    instance-id: ${spring.application.name}:${spring.cloud.client.hostname}
     lease-renewal-interval-in-seconds: 10
     lease-expiration-duration-in-seconds: 30
     #instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
