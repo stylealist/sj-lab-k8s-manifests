@@ -20,6 +20,8 @@ spring:
       hibernate:
         format_sql: true
     show-sql: true
+  config:
+    import: optional:file:/app/config/application.yml
 
 logging:
   level:
@@ -45,7 +47,3 @@ springdoc:
     disable-swagger-default-url: true
     config-url: /api/map/v3/api-docs/swagger-config
     url: /api/map/v3/api-docs
-
-spring:
-  config:
-    import: optional:file:/config/application.yml
