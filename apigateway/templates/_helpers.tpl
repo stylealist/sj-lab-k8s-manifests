@@ -3,5 +3,5 @@
 {{- end }}
 
 {{- define "apigateway.fullname" -}}
-{{ include "apigateway.name" . }}-{{ .Release.Name }}
+{{ .Release.Name }}
 {{- end }}
