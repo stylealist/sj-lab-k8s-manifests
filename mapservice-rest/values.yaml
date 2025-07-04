@@ -1,6 +1,6 @@
 image:
   repository: sj-lab-registry.kr.ncr.ntruss.com/mapservice-rest
-  tag: 21
+  tag: 22
   pullSecret: ncp-registry-secret
 
 spring:
