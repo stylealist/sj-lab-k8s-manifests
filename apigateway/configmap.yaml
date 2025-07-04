@@ -14,6 +14,9 @@ data:
       profiles:
         active: prod
       cloud:
+        loadbalancer:
+          ribbon:
+            enabled: false
         gateway:
           default-filters:
             - name: GlobalFilter
