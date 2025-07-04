@@ -1,0 +1,33 @@
+{{- if .Values.controller.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "argocd.fullname" . }}-controller
+  labels:
+    app.kubernetes.io/name: argocd-controller
+    app.kubernetes.io/part-of: argocd
+spec:
+  replicas: {{ .Values.controller.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-controller
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: argocd-controller
+    spec:
+      containers:
+        - name: controller
+          image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag }}"
+          imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
+          command: [ "argocd-application-controller" ]
+          ports:
+            - name: metrics
+              containerPort: 8082
+          volumeMounts:
+            - mountPath: /app/config/controller/tls
+              name: tls-certs
+      volumes:
+        - name: tls-certs
+          emptyDir: {}
+{{- end }}
