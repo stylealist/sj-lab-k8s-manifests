@@ -1,0 +1,24 @@
+image:
+  repository: sj-lab-registry.kr.ncr.ntruss.com/jenkins-with-docker
+  tag: latest
+  pullPolicy: IfNotPresent
+  pullSecrets:
+    - name: ncp-registry-secret
+
+service:
+  type: NodePort
+  httpPort: 8080
+  httpNodePort: 31880
+  agentPort: 50000
+  agentNodePort: 32500
+
+persistence:
+  storageClass: manual
+  accessModes:
+    - ReadWriteOnce
+  size: 10Gi
+  hostPath: /home/kuber-volume/jenkins
+
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 988

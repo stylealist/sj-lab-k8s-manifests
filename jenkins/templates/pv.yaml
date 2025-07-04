@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "jenkins.fullname" . }}-pv
+spec:
+  capacity:
+    storage: {{ .Values.persistence.size }}
+  accessModes:
+{{ toYaml .Values.persistence.accessModes | indent 4 }}
+  hostPath:
+    path: {{ .Values.persistence.hostPath }}
+  storageClassName: {{ .Values.persistence.storageClass }}
