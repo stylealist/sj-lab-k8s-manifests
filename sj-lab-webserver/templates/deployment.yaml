@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sj-lab-webserver.fullname" . }}
+  namespace: sj-lab
+  labels:
+    app: {{ include "sj-lab-webserver.name" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "sj-lab-webserver.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "sj-lab-webserver.name" . }}
+      annotations:
+        checksum/nginx-conf: {{ .Files.Get "files/nginx.conf" | sha256sum }}
+        checksum/nginx-set-conf: {{ .Files.Get "files/nginx-set.conf" | sha256sum }}
+    spec:
+      containers:
+        - name: nginx
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          volumeMounts:
+            - name: web-content
+              mountPath: /home/www
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d/nginx-set.conf
+              subPath: nginx-set.conf
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+            - name: certs
+              mountPath: /etc/letsencrypt
+            - name: error-pages
+              mountPath: /home
+      volumes:
+        - name: web-content
+          hostPath:
+            path: {{ .Values.volumes.webContent }}
+            type: Directory
+        - name: nginx-config
+          configMap:
+            name: nginx-config
+        - name: certs
+          hostPath:
+            path: {{ .Values.volumes.certs }}
+            type: Directory
+        - name: error-pages
+          hostPath:
+            path: {{ .Values.volumes.errorPages }}
+            type: Directory

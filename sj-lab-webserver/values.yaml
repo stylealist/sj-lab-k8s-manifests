@@ -1,0 +1,14 @@
+image:
+  repository: nginx
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 80
+  nodePort: 32080
+
+volumes:
+  webContent: /home/kuber-volume/sj-lab-webserver/html
+  certs: /home/kuber-set/sj-lab-webserver/certs/letsencrypt
+  errorPages: /home/kuber-set/sj-lab-webserver/error-pages
