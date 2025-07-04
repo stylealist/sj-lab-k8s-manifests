@@ -1,6 +1,7 @@
 image:
   repository: sj-lab-registry.kr.ncr.ntruss.com/mapservice-rest
-  tag: latest
+  tag: "6"
+  pullSecret: ncp-registry-secret
 
 spring:
   profile: prod
@@ -8,3 +9,7 @@ spring:
 service:
   type: ClusterIP
   port: 8080
+
+env:
+  springProfile: prod
+  springConfigLocation: "classpath:/,file:/app/config/"

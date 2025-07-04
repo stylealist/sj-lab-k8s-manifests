@@ -4,6 +4,9 @@ metadata:
   name: {{ include "mapservice-rest.fullname" . }}
   labels:
     app: {{ include "mapservice-rest.name" . }}
+  annotations:
+    configmap-checksum: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    service-checksum: {{ include (print $.Template.BasePath "/service.yaml") . | sha256sum }}
 spec:
   replicas: 1
   selector:
@@ -14,18 +17,22 @@ spec:
       labels:
         app: {{ include "mapservice-rest.name" . }}
     spec:
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: IfNotPresent
           env:
             - name: SPRING_PROFILES_ACTIVE
-              value: {{ .Values.spring.profile | default "prod" }}
+              value: {{ .Values.env.springProfile }}
+            - name: SPRING_CONFIG_LOCATION
+              value: {{ .Values.env.springConfigLocation }}
           ports:
             - containerPort: 8080
           volumeMounts:
             - name: config-volume
-              mountPath: /config
+              mountPath: /app/config
       volumes:
         - name: config-volume
           configMap:
