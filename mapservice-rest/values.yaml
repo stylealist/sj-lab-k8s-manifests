@@ -13,3 +13,5 @@ service:
 env:
   springProfile: prod
   springConfigLocation: "classpath:/,file:/app/config/"
+
+fullnameOverride: mapservice-rest
