@@ -4,22 +4,22 @@ server:
     context-path: /map
   forward-headers-strategy: framework
 
-spring:
-  application:
-    name: mapservice-rest
-  profiles:
-    active: prod
-  datasource:
-    url: jdbc:postgresql://POSTGRES_HOST:5432/map-service
-    username: admin
-    password: PASSWORD
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-    show-sql: true
+#spring:
+#  application:
+#    name: mapservice-rest
+#  profiles:
+#    active: prod
+#  datasource:
+#    url: jdbc:postgresql://POSTGRES_HOST:5432/map-service
+#    username: admin
+#    password: PASSWORD
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    properties:
+#      hibernate:
+#        format_sql: true
+#    show-sql: true
   config:
     import: optional:file:/app/config/application.yml
 
