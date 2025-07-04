@@ -29,10 +29,10 @@ spec:
             - name: config-volume
               mountPath: /app/config
           env:
-            - name: SPRING_CONFIG_LOCATION
-              value: "file:/config/"
             - name: SPRING_PROFILES_ACTIVE
-              value: "prod"
+              value: {{ .Values.env.springProfile }}
+            - name: SPRING_CONFIG_LOCATION
+              value: {{ .Values.env.springConfigLocation }}
       volumes:
         - name: config-volume
           configMap:
