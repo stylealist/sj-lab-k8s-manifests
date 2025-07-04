@@ -10,5 +10,5 @@ service:
 
 volumes:
   webContent: /home/kuber-volume/sj-lab-webserver/html
-  certs: /home/kuber-set/webserver_not_use/certs/letsencrypt
+  certs: /etc/letsencrypt
   errorPages: /home/kuber-set/sj-lab-webserver_not_use/error-pages
