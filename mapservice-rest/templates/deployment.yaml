@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sj-lab-mapservice-chart.fullname" . }}
+  labels:
+    app: {{ include "sj-lab-mapservice-chart.name" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "sj-lab-mapservice-chart.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "sj-lab-mapservice-chart.name" . }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ .Values.spring.profile | default "prod" }}
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "sj-lab-mapservice-chart.fullname" . }}-config

@@ -1,0 +1,51 @@
+server:
+  port: 0
+  servlet:
+    context-path: /map
+  forward-headers-strategy: framework
+
+spring:
+  application:
+    name: mapservice-rest
+  profiles:
+    active: prod
+  datasource:
+    url: jdbc:postgresql://POSTGRES_HOST:5432/map-service
+    username: admin
+    password: PASSWORD
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+logging:
+  level:
+    org.springframework: debug
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "self,health"
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://www.sj-lab.co.kr/discovery/eureka
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+springdoc:
+  swagger-ui:
+    disable-swagger-default-url: true
+    config-url: /api/map/v3/api-docs/swagger-config
+    url: /api/map/v3/api-docs
+
+spring:
+  config:
+    import: optional:file:/config/application.yml
