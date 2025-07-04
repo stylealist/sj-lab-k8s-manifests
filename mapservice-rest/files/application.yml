@@ -4,11 +4,15 @@ server:
     context-path: /map
   forward-headers-strategy: framework
 
-#spring:
-#  application:
-#    name: mapservice-rest
-#  profiles:
-#    active: prod
+spring:
+  application:
+    name: mapservice-rest
+  profiles:
+    active: prod
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 #  datasource:
 #    url: jdbc:postgresql://POSTGRES_HOST:5432/map-service
 #    username: admin
