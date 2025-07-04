@@ -1,6 +1,7 @@
 ## Argo CD configuration
 ## Ref: https://github.com/argoproj/argo-cd
 ##
+##
 
 # -- Provide a name in place of `argocd`
 nameOverride: argocd
