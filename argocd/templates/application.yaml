@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/stylealist/sj-lab-k8s-manifests.git
     targetRevision: main
-    path: argocd-self
+    path: argocd
     helm:
       valueFiles:
         - values.yaml
