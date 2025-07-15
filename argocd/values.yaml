@@ -19,7 +19,7 @@ server:
 
   config:
     server.insecure: false
-    sync-test-dummy: true  # 🔧 아무 의미 없는 값 추가
+    dummy: test-sync-01
 
   ingress:
     enabled: false
