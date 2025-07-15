@@ -23,6 +23,3 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - AllowEmpty=true
-
-data:
-  dummy-value: "{{ .Values.server.config.dummy | quote }}"

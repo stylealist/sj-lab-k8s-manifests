@@ -13,13 +13,12 @@ server:
       port: 443
       targetPort: 8080
       nodePort: 32088
-
+4124
   extraArgs:
     - --insecure=false
 
   config:
     server.insecure: false
-    dummy: test-sync-01
 
   ingress:
     enabled: false
