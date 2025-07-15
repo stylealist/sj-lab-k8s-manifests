@@ -1,4 +1,4 @@
-#Chart
+#Chart.yaml
 apiVersion: v2
 name: argocd
 description: A Helm chart to manage Argo CD itself using GitOps
