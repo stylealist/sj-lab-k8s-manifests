@@ -1,6 +1,6 @@
 #Chart
 apiVersion: v2
-name: argocd-self
+name: argocd
 description: A Helm chart to manage Argo CD itself using GitOps
 type: application
 version: 1.0.0
