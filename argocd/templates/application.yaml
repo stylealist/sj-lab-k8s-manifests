@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/your-org/your-repo.git
+    repoURL: https://github.com/stylealist/sj-lab-k8s-manifests.git
     targetRevision: main
     path: argocd-self
     helm:
