@@ -18,6 +18,10 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 8080
+          env:
+                {{- with .Values.env }}
+                {{- toYaml . | nindent 6 }}
+                {{- end }}
           volumeMounts:
             - name: data-dir
               mountPath: /opt/geoserver/data_dir

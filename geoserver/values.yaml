@@ -16,7 +16,10 @@ persistence:
 #  accessMode: ReadWriteOnce
 #  size: 5Gi
 
-
 hostPath:
   enabled: true
   path: /home/kuber-volume/geoserver-data  # <-- [수정] 호스트 디렉토리로 마운트할 실제 경로
+
+env:
+  - name: PROXY_BASE_URL
+    value: https://geoserver.sj-lab.co.kr/geoserver
