@@ -11,10 +11,11 @@ service:
 resources: {}
 
 persistence:
-  enabled: true
-  storageClass: "manual"  # <-- [수정] hostPath PVC에 맞는 storageClass 설정
-  accessMode: ReadWriteOnce
-  size: 5Gi
+  enabled: false
+#  storageClass: "manual"  # <-- [수정] hostPath PVC에 맞는 storageClass 설정
+#  accessMode: ReadWriteOnce
+#  size: 5Gi
+
 
 hostPath:
   enabled: true
