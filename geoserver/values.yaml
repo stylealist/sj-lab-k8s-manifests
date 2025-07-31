@@ -1,7 +1,10 @@
 image:
-  repository: kartoza/geoserver  # <-- [필요시 수정] 사설 레지스트리를 사용하는 경우 변경
-  tag: 2.24.0
+  #repository: kartoza/geoserver  # <-- [필요시 수정] 사설 레지스트리를 사용하는 경우 변경
+  repository: docker.osgeo.org/geoserver   # <-- [필요시 수정] 사설 레지스트리를 사용하는 경우 변경
+  tag: 2.25.0
+  #tag: 2.24.0
   pullPolicy: IfNotPresent
+
 
 service:
   type: NodePort
