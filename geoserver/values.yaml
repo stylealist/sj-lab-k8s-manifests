@@ -1,0 +1,21 @@
+image:
+  repository: kartoza/geoserver  # <-- [필요시 수정] 사설 레지스트리를 사용하는 경우 변경
+  tag: 2.24.0
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 8080
+  nodePort: 32180  # <-- [수정] 로컬 NGINX에서 reverse proxy할 노드포트 번호
+
+resources: {}
+
+persistence:
+  enabled: true
+  storageClass: "manual"  # <-- [수정] hostPath PVC에 맞는 storageClass 설정
+  accessMode: ReadWriteOnce
+  size: 5Gi
+
+hostPath:
+  enabled: true
+  path: /home/kuber-volume/geoserver-data  # <-- [수정] 호스트 디렉토리로 마운트할 실제 경로

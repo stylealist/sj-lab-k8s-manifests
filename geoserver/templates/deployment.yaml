@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-geoserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: geoserver
+  template:
+    metadata:
+      labels:
+        app: geoserver
+    spec:
+      containers:
+        - name: geoserver
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: data-dir
+              mountPath: /opt/geoserver/data_dir
+      volumes:
+        - name: data-dir
+{{- if .Values.hostPath.enabled }}
+          hostPath:
+            path: {{ .Values.hostPath.path }}  # <-- [수정] 실제 호스트 경로
+            type: DirectoryOrCreate
+{{- else }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-geoserver-pvc
+{{- end }}

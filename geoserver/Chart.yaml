@@ -1,0 +1,5 @@
+apiVersion: v2
+name: geoserver
+description: GeoServer Helm chart (local nginx reverse proxy setup)
+version: 0.1.0
+appVersion: 2.24.0
