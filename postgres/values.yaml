@@ -1,8 +1,8 @@
 auth:
-  database: geoserverdb
-  username: geoserver
-  password: geoserverpw
-  postgresPassword: postgres
+  database: sjlab
+  username: stylealist
+  password: !@xogml159
+  postgresPassword: !@xogml159
 
 image:
   repository: postgres
