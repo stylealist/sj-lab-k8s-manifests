@@ -1,8 +1,8 @@
 auth:
   database: sjlab
   username: stylealist
-  password: !@xogml159
-  postgresPassword: !@xogml159
+  password: "!@xogml159"
+  postgresPassword: "!@xogml159"
 
 image:
   repository: postgres
@@ -17,5 +17,5 @@ service:
 volume:
   enabled: true
   name: postgresql-storage
-  mountPath: /bitnami/postgresql
-  hostPath: /home/kuber-volume/postgres  # <- CHANGE THIS to your desired local path
+  mountPath: /var/lib/postgresql/data
+  hostPath: /home/kuber-volume/postgres
