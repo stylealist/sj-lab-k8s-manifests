@@ -26,3 +26,11 @@ spec:
               value: {{ .Values.auth.password | quote }}
             - name: POSTGRESQL_POSTGRES_PASSWORD
               value: {{ .Values.auth.postgresPassword | quote }}
+          volumeMounts:
+            - name: {{ .Values.volume.name }}
+              mountPath: {{ .Values.volume.mountPath }}
+      volumes:
+        - name: {{ .Values.volume.name }}
+          hostPath:
+            path: {{ .Values.volume.hostPath | quote }}
+            type: DirectoryOrCreate

@@ -1,8 +1,8 @@
 auth:
-  database: sj-lab              # 수정 가능
-  username: stylealist                # 수정 가능
-  password: !@xogml159              # 수정 가능
-  postgresPassword: !@xogml159         # 수정 가능
+  database: geoserverdb
+  username: geoserver
+  password: geoserverpw
+  postgresPassword: postgres
 
 image:
   repository: bitnami/postgresql
@@ -12,4 +12,10 @@ fullnameOverride: "postgresql"
 
 service:
   port: 5432
-  nodePort: 45432  # NodePort 접근용 포트
+  nodePort: 30017
+
+volume:
+  enabled: true
+  name: postgresql-storage
+  mountPath: /bitnami/postgresql
+  hostPath: /home/kuber-volume/postgres  # <- CHANGE THIS to your desired local path
