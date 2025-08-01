@@ -1,0 +1,15 @@
+auth:
+  database: sj-lab              # 수정 가능
+  username: stylealist                # 수정 가능
+  password: !@xogml159              # 수정 가능
+  postgresPassword: !@xogml159         # 수정 가능
+
+image:
+  repository: bitnami/postgresql
+  tag: "17.5.0-debian-11-r0"
+
+fullnameOverride: "postgresql"
+
+service:
+  port: 5432
+  nodePort: 45432  # NodePort 접근용 포트
