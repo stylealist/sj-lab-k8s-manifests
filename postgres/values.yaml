@@ -5,8 +5,8 @@ auth:
   postgresPassword: postgres
 
 image:
-  repository: bitnami/postgresql
-  tag: "17.5.0-debian-11-r0"
+  repository: postgres
+  tag: "17.5-alpine"
 
 fullnameOverride: "postgresql"
 
