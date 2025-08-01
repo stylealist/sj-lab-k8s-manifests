@@ -2,7 +2,6 @@ auth:
   database: sjlab
   username: stylealist
   password: "!@xogml159"
-  postgresPassword: "!@xogml159"
 
 image:
   repository: postgres
