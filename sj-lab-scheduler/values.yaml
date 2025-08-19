@@ -1,0 +1,17 @@
+image:
+  repository: sj-lab-registry.kr.ncr.ntruss.com/sj-lab-scheduler
+  tag: 1
+  pullSecret: ncp-registry-secret
+
+spring:
+  profile: prod
+
+service:
+  type: ClusterIP
+  port: 8080
+
+env:
+  springProfile: prod
+  springConfigLocation: "classpath:/,file:/app/config/"
+
+fullnameOverride: sj-lab-scheduler

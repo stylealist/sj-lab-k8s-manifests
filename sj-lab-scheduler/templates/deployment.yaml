@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sj-lab-scheduler.fullname" . }}
+  labels:
+    app: {{ include "sj-lab-scheduler.name" . }}
+  annotations:
+    configmap-checksum: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    service-checksum: {{ include (print $.Template.BasePath "/service.yaml") . | sha256sum }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "sj-lab-scheduler.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "sj-lab-scheduler.name" . }}
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ .Values.env.springProfile }}
+            - name: SPRING_CONFIG_LOCATION
+              value: {{ .Values.env.springConfigLocation }}
+          ports:
+            - containerPort: 38880
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "sj-lab-scheduler.fullname" . }}-config

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sj-lab-scheduler.fullname" . }}
+spec:
+  selector:
+    app: {{ include "sj-lab-scheduler.name" . }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: 38880
+  type: {{ .Values.service.type }}
