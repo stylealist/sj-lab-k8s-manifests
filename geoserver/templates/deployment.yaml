@@ -25,6 +25,9 @@ spec:
           volumeMounts:
             - name: data-dir
               mountPath: /opt/geoserver/data_dir
+                # [추가] GeoServer가 실제로 참조하는 경로도 같이 마운트
+            - name: data-dir
+              mountPath: /opt/geoserver_data
       volumes:
         - name: data-dir
 {{- if .Values.hostPath.enabled }}
