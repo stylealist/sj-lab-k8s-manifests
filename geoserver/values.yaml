@@ -1,3 +1,4 @@
+#test
 image:
   #repository: kartoza/geoserver
   repository: docker.osgeo.org/geoserver
