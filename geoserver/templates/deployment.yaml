@@ -28,7 +28,7 @@ spec:
           volumeMounts:
             # 기존 경로(과거 플러그인/스크립트 호환)
             - name: data-dir
-              mountPath: /opt/geoserver/data_dir
+              mountPath: /opt/geoserver
             # GeoServer가 실제 로그에 표시하는 경로도 함께 마운트
             - name: data-dir
               mountPath: {{ .Values.dataDir.mountPath | default "/opt/geoserver_data" | quote }}
