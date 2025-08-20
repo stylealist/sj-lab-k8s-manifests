@@ -28,6 +28,8 @@ spec:
               value: {{ .Values.env.springProfile }}
             - name: SPRING_CONFIG_LOCATION
               value: {{ .Values.env.springConfigLocation }}
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Duser.timezone=Asia/Seoul"
           ports:
             - containerPort: 38880
           volumeMounts:
