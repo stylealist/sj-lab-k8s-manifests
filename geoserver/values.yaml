@@ -30,3 +30,5 @@ env:
     value: "Asia/Seoul"
   - name: JAVA_TOOL_OPTIONS
     value: "-Duser.timezone=Asia/Seoul"
+  - name: GEOSERVER_CSRF_WHITELIST
+    value: "geoserver.sj-lab.co.kr"
