@@ -1,27 +1,31 @@
 image:
-  #repository: kartoza/geoserver  # <-- [필요시 수정] 사설 레지스트리를 사용하는 경우 변경
-  repository: docker.osgeo.org/geoserver   # <-- [필요시 수정] 사설 레지스트리를 사용하는 경우 변경
+  #repository: kartoza/geoserver
+  repository: docker.osgeo.org/geoserver
   tag: 2.25.0
   #tag: 2.24.0
   pullPolicy: IfNotPresent
 
-
 service:
   type: NodePort
   port: 8080
-  nodePort: 32180  # <-- [수정] 로컬 NGINX에서 reverse proxy할 노드포트 번호
+  nodePort: 32180  # 로컬 NGINX에서 reverse proxy할 노드포트 번호
 
 resources: {}
 
 persistence:
   enabled: false
-#  storageClass: "manual"  # <-- [수정] hostPath PVC에 맞는 storageClass 설정
-#  accessMode: ReadWriteOnce
-#  size: 5Gi
+  #storageClass: "manual"
+  #accessMode: ReadWriteOnce
+  #size: 5Gi
 
+# 호스트 경로(노드) ↔ 컨테이너 데이터 디렉터리 연결
 hostPath:
   enabled: true
-  path: /home/kuber-volume/geoserver-data  # <-- [수정] 호스트 디렉토리로 마운트할 실제 경로
+  path: /home/kuber-volume/geoserver-workspace  # 로컬 호스트 경로
+
+# 컨테이너 내부 데이터 디렉터리 경로
+dataDir:
+  mountPath: /opt/geoserver_data
 
 env:
   - name: PROXY_BASE_URL
@@ -32,5 +36,3 @@ env:
     value: "-Duser.timezone=Asia/Seoul"
   - name: GEOSERVER_CSRF_WHITELIST
     value: "geoserver.sj-lab.co.kr"
-  - name: geoserver_data_dir
-    value: "/opt/geoserver_data"
