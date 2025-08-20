@@ -4,8 +4,9 @@ auth:
   password: "!@xogml159"
 
 image:
-  repository: postgres
-  tag: "17.5-alpine"
+  repository: postgis/postgis
+  tag: "17-3.4"
+  #tag: "17.5-alpine"
 
 fullnameOverride: "postgresql"
 
