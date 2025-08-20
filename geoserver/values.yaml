@@ -37,18 +37,3 @@ env:
     value: "-Duser.timezone=Asia/Seoul"
   - name: GEOSERVER_CSRF_WHITELIST
     value: "geoserver.sj-lab.co.kr"
-
-# web.xml 영구화(볼륨) 설정
-webXml:
-  enabled: true
-  # 컨테이너 내 WEB-INF 경로(GeoServer Jetty 이미지 기본값)
-  mountDir: /opt/geoserver/webapps/geoserver/WEB-INF
-
-  # 호스트 경로로 영구화 (또는 아래 pvc 사용)
-  hostPath:
-    enabled: true
-    path: /home/kuber-volume/geoserver-webinf  # 호스트에 보관할 위치
-
-  pvc:
-    enabled: false
-    claimName: ""        # pvc 쓸 경우 이름 지정
