@@ -12,6 +12,32 @@ spec:
       labels:
         app: geoserver
     spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: "OnRootMismatch"
+      {{- if .Values.webXml.enabled }}
+      initContainers:
+        - name: seed-webxml
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          command: [ "/bin/sh","-lc" ]
+          args:
+            - |
+              set -e
+              SRC="{{ .Values.webXml.mountDir | default "/opt/geoserver/webapps/geoserver/WEB-INF" }}"
+              DST="/webinf"
+              # 대상 폴더가 비어 있으면 한 번만 복사(씨딩)
+              if [ -z "$(ls -A "$DST" 2>/dev/null)" ]; then
+                echo "Seeding $DST from $SRC ..."
+                mkdir -p "$DST"
+                cp -a "$SRC"/* "$DST"/
+                chown -R 1000:1000 "$DST" || true
+              fi
+          volumeMounts:
+            - name: webinf
+              mountPath: /webinf
+      {{- end }}
       containers:
         - name: geoserver
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -33,6 +59,17 @@ spec:
             - name: data-dir
               mountPath: {{ .Values.dataDir.mountPath | default "/opt/geoserver_data" | quote }}
       volumes:
+        {{- if .Values.webXml.enabled }}
+        - name: webinf
+          {{- if .Values.webXml.hostPath.enabled }}
+          hostPath:
+            path: {{ .Values.webXml.hostPath.path | quote }}
+            type: DirectoryOrCreate
+          {{- else if .Values.webXml.pvc.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.webXml.pvc.claimName | quote }}
+          {{- end }}
+        {{- end }}
         - name: data-dir
 {{- if .Values.hostPath.enabled }}
           hostPath:
