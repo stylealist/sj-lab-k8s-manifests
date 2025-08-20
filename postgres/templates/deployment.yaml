@@ -24,6 +24,8 @@ spec:
               value: {{ .Values.auth.username | quote }}
             - name: POSTGRES_PASSWORD
               value: {{ .Values.auth.password | quote }}
+            - name: TZ
+              value: "Asia/Seoul"
           volumeMounts:
             - name: {{ .Values.volume.name }}
               mountPath: {{ .Values.volume.mountPath }}

@@ -37,6 +37,9 @@ spec:
               mountPath: /etc/letsencrypt
             - name: error-pages
               mountPath: /home
+          env:
+            - name: TZ
+              value: "Asia/Seoul"
       volumes:
         - name: web-content
           hostPath:

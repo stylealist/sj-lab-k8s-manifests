@@ -26,3 +26,7 @@ hostPath:
 env:
   - name: PROXY_BASE_URL
     value: https://geoserver.sj-lab.co.kr/geoserver
+  - name: TZ
+    value: "Asia/Seoul"
+  - name: JAVA_TOOL_OPTIONS
+    value: "-Duser.timezone=Asia/Seoul"

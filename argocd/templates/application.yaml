@@ -23,3 +23,7 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - AllowEmpty=true
+  containers:
+    env:
+      - name: TZ
+        value: "Asia/Seoul"
