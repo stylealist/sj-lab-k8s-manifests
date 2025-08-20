@@ -21,17 +21,17 @@ spec:
           env:
             # GeoServer가 사용할 데이터 디렉터리 경로 명시
             - name: GEOSERVER_DATA_DIR
-              value: {{ .Values.dataDir.mountPath | default "/opt/geoserver_data" | quote }}
+              value: {{ .Values.dataDir.mountPath | default "/" | quote }}
             {{- with .Values.env }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
           volumeMounts:
             # 기존 경로(과거 플러그인/스크립트 호환)
             - name: data-dir
-              mountPath: /opt/geoserver
+              mountPath: /opt/geoserver/data_dir
             # GeoServer가 실제 로그에 표시하는 경로도 함께 마운트
             - name: data-dir
-              mountPath: {{ .Values.dataDir.mountPath | default "/opt/geoserver_data" | quote }}
+              mountPath: {{ .Values.dataDir.mountPath | default "/" | quote }}
       volumes:
         - name: data-dir
 {{- if .Values.hostPath.enabled }}

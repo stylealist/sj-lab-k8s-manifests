@@ -26,7 +26,7 @@ hostPath:
 
 # 컨테이너 내부 데이터 디렉터리 경로
 dataDir:
-  mountPath: /opt/geoserver_data
+  mountPath: /
 
 env:
   - name: PROXY_BASE_URL
