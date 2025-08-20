@@ -30,6 +30,8 @@ spec:
               value: {{ .Values.env.springProfile }}
             - name: SPRING_CONFIG_LOCATION
               value: {{ .Values.env.springConfigLocation }}
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Duser.timezone=Asia/Seoul"
           volumeMounts:
             - name: config-volume
               mountPath: /app/config
