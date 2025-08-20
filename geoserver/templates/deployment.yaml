@@ -26,7 +26,7 @@ spec:
             - name: data-dir
               mountPath: /opt/geoserver/data_dir
                 # [추가] GeoServer가 실제로 참조하는 경로도 같이 마운트
-            - name: data-dir
+            - name: geoserver-data-dir
               mountPath: /opt/geoserver_data
       volumes:
         - name: data-dir
@@ -34,6 +34,10 @@ spec:
           hostPath:
             path: {{ .Values.hostPath.path }}  # <-- [수정] 실제 호스트 경로
             type: DirectoryOrCreate
+          - name: geoserver-data-dir
+          hostPath:
+            path: {{ .Values.env.geoserver_data_dir }}
+            type: Directory
 {{- else }}
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-geoserver-pvc

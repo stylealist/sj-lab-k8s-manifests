@@ -32,6 +32,5 @@ env:
     value: "-Duser.timezone=Asia/Seoul"
   - name: GEOSERVER_CSRF_WHITELIST
     value: "geoserver.sj-lab.co.kr"
-  # [추가] GeoServer 데이터 디렉터리 지정
-  - name: GEOSERVER_DATA_DIR
+  - name: geoserver_data_dir
     value: "/opt/geoserver_data"
