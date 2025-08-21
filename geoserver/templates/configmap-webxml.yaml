@@ -1,0 +1,79 @@
+{{- if .Values.cors.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-geoserver-webxml
+data:
+  web.xml: |-
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!--
+      (여기에 "원본 web.xml" 전체 내용을 붙여넣되,
+      아래 CORS 필터 블록만 활성화/추가해 둔다)
+    -->
+
+    <!-- ====== CORS for Tomcat (org.apache.catalina.filters.CorsFilter) ====== -->
+    <!-- Tomcat이라면 이 블록을 사용 -->
+    <filter>
+        <filter-name>CorsFilter</filter-name>
+        <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+        <init-param>
+            <param-name>cors.allowed.origins</param-name>
+            <param-value>{{ .Values.cors.allowedOrigins }}</param-value>
+        </init-param>
+        <init-param>
+            <param-name>cors.allowed.methods</param-name>
+            <param-value>{{ .Values.cors.allowedMethods }}</param-value>
+        </init-param>
+        <init-param>
+            <param-name>cors.allowed.headers</param-name>
+            <param-value>{{ .Values.cors.allowedHeaders }}</param-value>
+        </init-param>
+        <init-param>
+            <param-name>cors.exposed.headers</param-name>
+            <param-value>{{ .Values.cors.exposedHeaders }}</param-value>
+        </init-param>
+        <!-- 필요시
+        <init-param>
+          <param-name>cors.support.credentials</param-name>
+          <param-value>true</param-value>
+        </init-param>
+        -->
+    </filter>
+    <filter-mapping>
+    <filter-name>CorsFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+            <!-- ====== CORS for Jetty (org.eclipse.jetty.servlets.CrossOriginFilter) ====== -->
+            <!-- Jetty라면 위 Tomcat 블록 대신 이 블록을 사용 (둘 다 X) -->
+            <!--
+            <filter>
+              <filter-name>cross-origin</filter-name>
+              <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
+              <init-param>
+                <param-name>chainPreflight</param-name>
+                <param-value>false</param-value>
+              </init-param>
+              <init-param>
+                <param-name>allowedOrigins</param-name>
+                <param-value>{{ .Values.cors.allowedOrigins }}</param-value>
+      </init-param>
+      <init-param>
+        <param-name>allowedMethods</param-name>
+        <param-value>{{ .Values.cors.allowedMethods }}</param-value>
+      </init-param>
+      <init-param>
+        <param-name>allowedHeaders</param-name>
+        <param-value>{{ .Values.cors.allowedHeaders }}</param-value>
+      </init-param>
+      <init-param>
+        <param-name>exposedHeaders</param-name>
+        <param-value>{{ .Values.cors.exposedHeaders }}</param-value>
+      </init-param>
+    </filter>
+    <filter-mapping>
+      <filter-name>cross-origin</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    -->
+{{- end }}
