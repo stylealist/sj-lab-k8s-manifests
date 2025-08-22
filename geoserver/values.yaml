@@ -41,12 +41,9 @@ env:
 # values.yaml (추가)
 cors:
   enabled: true
-  # 위 0단계에서 확인한 실제 web.xml 경로로 설정
-  webXmlPath: "/usr/local/tomcat/webapps/geoserver/WEB-INF/web.xml"  # Tomcat 예시
-  # webXmlPath: "/opt/geoserver/webapps/geoserver/WEB-INF/web.xml"   # Jetty 예시
-
-  # 허용할 오리진(개발/배포 도메인만 명시적으로!)
-  allowedOrigins: "http://localhost:4000,https://www.sj-lab.co.kr"
+  webXmlPath: "/usr/local/tomcat/webapps/geoserver/WEB-INF/web.xml"  # Tomcat
+  # 쉼표 뒤에 공백 없이! (필터 구현에 따라 공백도 문자열로 인식될 수 있음)
+  allowedOrigins: "http://localhost:4000,https://sj-lab.co.kr,https://www.sj-lab.co.kr"
   allowedMethods: "GET,POST,OPTIONS,HEAD"
   allowedHeaders: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
   exposedHeaders: "Content-Length,Content-Range"
