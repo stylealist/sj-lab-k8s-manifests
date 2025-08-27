@@ -1,6 +1,6 @@
 image:
   repository: sj-lab-registry.kr.ncr.ntruss.com/sj-lab-scheduler
-  tag: 26
+  tag: 27
   pullSecret: ncp-registry-secret
 
 spring:
