@@ -36,20 +36,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-            # Pod Namespace (Service DNS 구성에 필요)
-           - name: POD_NAMESPACE
-             valueFrom:
-               fieldRef:
-                 fieldPath: metadata.namespace
-            # Service 이름 (Service DNS 구성에 필요)
-            - name: SERVICE_NAME
-              value: {{ include "fast-api-ai.fullname" . | quote }}
-            # Service 포트 (Eureka 등록에 사용)
-            - name: SERVICE_PORT
-              value: {{ .Values.service.port | quote }}
-            # Eureka Server URL (선택사항 - values.yaml에서 관리 가능)
-            - name: EUREKA_SERVER
-              value: {{ .Values.eureka.serverUrl | default "https://eureka.sj-lab.co.kr/eureka" | quote }}
           ports:
             - containerPort: 8000 # FastAPI 기본 포트
           volumeMounts:
