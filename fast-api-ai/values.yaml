@@ -1,7 +1,7 @@
 image:
   # Jenkinsfile에서 본 NCP 레지스트리 주소 반영
   repository: sj-lab-registry.kr.ncr.ntruss.com/fast-api-ai
-  tag: 4
+  tag: 5
   pullSecret: ncp-registry-secret
 
 service:
