@@ -2,7 +2,7 @@
 replicaCount: 1
 image:
   repository: sj-lab-registry.kr.ncr.ntruss.com/sj-lab-apigateway
-  tag: 54
+  tag: 55
   pullPolicy: IfNotPresent
   pullSecrets:
     - name: ncp-registry-secret
