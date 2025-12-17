@@ -23,10 +23,10 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: IfNotPresent
           env:
-            - # 1. Eureka 주소 주입 (values.yaml에서 가져옴)
+            # 1. Eureka 주소 주입 (values.yaml에서 가져옴)
             - name: EUREKA_SERVER
             - value: {{ .Values.env.eurekaServer }}
-            - # 2. Pod IP 주입 (K8s가 자동으로 현재 Pod의 IP를 넣어줌)
+            # 2. Pod IP 주입 (K8s가 자동으로 현재 Pod의 IP를 넣어줌)
             - name: POD_IP
               valueFrom:
                 fieldRef:
