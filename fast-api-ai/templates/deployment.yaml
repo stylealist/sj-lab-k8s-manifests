@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fast-api-ai.fullname" . }}
+  labels:
+    app: {{ include "fast-api-ai.name" . }}
+  annotations:
+    configmap-checksum: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "fast-api-ai.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "fast-api-ai.name" . }}
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          env:
+            # Spring Profile 대신 일반 환경변수 사용
+            - name: APP_ENV
+              value: {{ .Values.env.appEnv }}
+            # Timezone 설정 (Linux 표준)
+            - name: TZ
+              value: "Asia/Seoul"
+            # 설정 파일 경로를 환경변수로 파이썬에 전달
+            - name: CONFIG_PATH
+              value: "/app/config/config.yaml"
+          ports:
+            - containerPort: 8000 # FastAPI 기본 포트
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "fast-api-ai.fullname" . }}-config

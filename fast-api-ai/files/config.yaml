@@ -1,0 +1,14 @@
+server:
+  port: 8000
+
+eureka:
+  client:
+    enabled: true
+    service_url: "https://eureka.sj-lab.co.kr/eureka"
+  instance:
+    app_name: "fast-api-ai"
+    instance_id: "${HOST_NAME}:${APP_NAME}"
+
+swagger:
+  docs_url: "/api/ai/v1/docs"
+  openapi_url: "/api/ai/v1/openapi.json"

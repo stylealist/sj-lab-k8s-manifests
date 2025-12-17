@@ -1,0 +1,15 @@
+image:
+  # Jenkinsfile에서 본 NCP 레지스트리 주소 반영
+  repository: sj-lab-registry.kr.ncr.ntruss.com/fast-api-ai
+  tag: latest # Jenkins가 배포시 덮어씌움
+  pullSecret: ncp-registry-secret
+
+service:
+  type: ClusterIP
+  port: 80       # K8s 서비스 포트 (외부 노출용)
+  targetPort: 8000 # FastAPI 컨테이너 포트 (내부용)
+
+env:
+  appEnv: prod
+
+fullnameOverride: fast-api-ai
