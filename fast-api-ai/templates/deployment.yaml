@@ -36,6 +36,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+            - name: EUREKA_SERVER
+              value: {{ .Values.env.EUREKA_SERVER | quote }}
           ports:
             - containerPort: 8000 # FastAPI 기본 포트
           volumeMounts:

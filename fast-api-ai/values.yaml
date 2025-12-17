@@ -10,6 +10,7 @@ service:
   targetPort: 8000 # FastAPI 컨테이너 포트 (내부용)
 
 env:
-  appEnv: prod
+  APP_ENV: prod
+  EUREKA_SERVER: https://eureka.sj-lab.co.kr/eureka
 
 fullnameOverride: fast-api-ai
