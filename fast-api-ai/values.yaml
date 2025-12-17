@@ -12,4 +12,7 @@ service:
 env:
   appEnv: prod
 
+eureka:
+  serverUrl: "https://eureka.sj-lab.co.kr/eureka"
+
 fullnameOverride: fast-api-ai

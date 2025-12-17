@@ -32,6 +32,13 @@ spec:
             # 설정 파일 경로를 환경변수로 파이썬에 전달
             - name: CONFIG_PATH
               value: "/app/config/config.yaml"
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            # Eureka Server URL (선택사항 - values.yaml에서 관리 가능)
+            - name: EUREKA_SERVER
+              value: {{ .Values.eureka.serverUrl | default "https://eureka.sj-lab.co.kr/eureka" | quote }}
           ports:
             - containerPort: 8000 # FastAPI 기본 포트
           volumeMounts:
