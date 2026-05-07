@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: qfieldcloud-config
+  namespace: {{ .Values.namespace }}
+data:
+  DJANGO_SETTINGS_MODULE: qfieldcloud.settings
+  POSTGRES_HOST: {{ .Values.postgres.host | quote }}
+  POSTGRES_DB: {{ .Values.postgres.database | quote }}
+  POSTGRES_USER: {{ .Values.postgres.username | quote }}
+  REDIS_HOST: {{ .Values.redis.host | quote }}
+  MINIO_ENDPOINT: {{ .Values.minio.endpoint | quote }}

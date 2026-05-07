@@ -1,0 +1,46 @@
+namespace: qfieldcloud
+
+image:
+  repository: opengisch/qfieldcloud-app
+  tag: latest
+  pullPolicy: IfNotPresent
+
+nginx:
+  image: nginx:stable
+
+worker:
+  replicas: 1
+
+qgis:
+  image: opengisch/qfieldcloud-qgis
+
+service:
+  type: ClusterIP
+  port: 80
+
+postgres:
+  host: postgres-postgresql.database.svc.cluster.local
+  port: 5432
+  database: qfieldcloud
+  username: qfieldcloud
+  password: changeme
+
+redis:
+  host: redis
+  port: 6379
+
+minio:
+  endpoint: http://minio.minio.svc.cluster.local:9000
+  accessKey: minio
+  secretKey: minio123
+  bucket: qfieldcloud
+
+storage:
+  size: 20Gi
+  storageClassName: nfs-client
+
+ingress:
+  enabled: true
+  className: nginx
+  host: qfield.example.com
+  tlsSecret: qfieldcloud-tls

@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qfieldcloud-app
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qfieldcloud-app
+  template:
+    metadata:
+      labels:
+        app: qfieldcloud-app
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: qfieldcloud-config
+            - secretRef:
+                name: qfieldcloud-secret
+          volumeMounts:
+            - name: media-storage
+              mountPath: /var/www/media
+      volumes:
+        - name: media-storage
+          persistentVolumeClaim:
+            claimName: qfieldcloud-pvc

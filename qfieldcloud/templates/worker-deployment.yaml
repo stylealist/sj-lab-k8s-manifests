@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qfieldcloud-worker
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.worker.replicas }}
+  selector:
+    matchLabels:
+      app: qfieldcloud-worker
+  template:
+    metadata:
+      labels:
+        app: qfieldcloud-worker
+    spec:
+      containers:
+        - name: worker
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          command:
+            - celery
+            - -A
+            - qfieldcloud
+            - worker
+            - --loglevel=INFO
+          envFrom:
+            - configMapRef:
+                name: qfieldcloud-config
+            - secretRef:
+                name: qfieldcloud-secret

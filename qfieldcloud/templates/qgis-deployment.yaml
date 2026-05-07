@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qfieldcloud-qgis
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qfieldcloud-qgis
+  template:
+    metadata:
+      labels:
+        app: qfieldcloud-qgis
+    spec:
+      containers:
+        - name: qgis
+          image: {{ .Values.qgis.image }}
+          ports:
+            - containerPort: 8080
