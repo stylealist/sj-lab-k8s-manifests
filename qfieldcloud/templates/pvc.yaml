@@ -1,0 +1,53 @@
+{{- if and .Values.persistence.static.enabled (not .Values.persistence.static.existingClaim) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "qfieldcloud.fullname" . }}-static
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "qfieldcloud.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.static.accessMode }}
+  storageClassName: {{ .Values.persistence.static.storageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.static.size }}
+{{- end }}
+
+{{- if and .Values.persistence.media.enabled (not .Values.persistence.media.existingClaim) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "qfieldcloud.fullname" . }}-media
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "qfieldcloud.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.media.accessMode }}
+  storageClassName: {{ .Values.persistence.media.storageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.media.size }}
+{{- end }}
+
+{{- if and .Values.persistence.transformationGrids.enabled (not .Values.persistence.transformationGrids.existingClaim) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "qfieldcloud.fullname" . }}-transformation-grids
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "qfieldcloud.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.transformationGrids.accessMode }}
+  storageClassName: {{ .Values.persistence.transformationGrids.storageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.transformationGrids.size }}
+{{- end }}

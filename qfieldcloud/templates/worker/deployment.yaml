@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "qfieldcloud.fullname" . }}-worker
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "qfieldcloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: worker
+  {{- with .Values.worker.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.worker.replicas }}
+  selector:
+    matchLabels:
+      {{- include "qfieldcloud.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: worker
+  template:
+    metadata:
+      labels:
+        {{- include "qfieldcloud.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: worker
+    spec:
+      serviceAccountName: {{ include "qfieldcloud.serviceAccountName" . }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 900  # 15 minutes (matches docker stop_grace_period)
+      containers:
+        - name: worker
+          image: "{{ .Values.image.app.repository }}:{{ .Values.image.app.tag }}"
+          imagePullPolicy: {{ .Values.image.app.pullPolicy }}
+          command:
+            - python
+            - manage.py
+            - dequeue
+          env:
+            {{- include "qfieldcloud.djangoEnv" . | nindent 12 }}
+            - name: TMP_DIRECTORY
+              value: /tmp
+          resources:
+            {{- toYaml .Values.worker.resources | nindent 12 }}
+          volumeMounts:
+            - name: static
+              mountPath: /usr/src/app/staticfiles
+            - name: media
+              mountPath: /usr/src/app/mediafiles
+            - name: transformation-grids
+              mountPath: /transformation_grids
+            # Note: docker.sock is needed in docker-compose but in k8s we use QGIS as a pod
+            # If you still need DinD, uncomment and configure appropriately:
+            # - name: docker-sock
+            #   mountPath: /var/run/docker.sock
+      {{- with .Values.worker.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.worker.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.worker.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: static
+          {{- if .Values.persistence.static.existingClaim }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.static.existingClaim }}
+          {{- else if .Values.persistence.static.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "qfieldcloud.fullname" . }}-static
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: media
+          {{- if .Values.persistence.media.existingClaim }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.media.existingClaim }}
+          {{- else if .Values.persistence.media.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "qfieldcloud.fullname" . }}-media
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: transformation-grids
+          {{- if .Values.persistence.transformationGrids.existingClaim }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.transformationGrids.existingClaim }}
+          {{- else if .Values.persistence.transformationGrids.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "qfieldcloud.fullname" . }}-transformation-grids
+          {{- else }}
+          emptyDir: {}
+          {{- end }}

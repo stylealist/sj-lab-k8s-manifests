@@ -1,0 +1,138 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "qfieldcloud.fullname" . }}-nginx-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "qfieldcloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: nginx
+data:
+  default.conf: |
+    map "$time_iso8601 # $msec" $time_iso8601_ms {
+      "~([^+]+)\+([\d:]+?) # \d+?\.(\d+)" "$1.$3+$2";
+    }
+
+    log_format json-logger escape=json
+    '{'
+      '"ts":"$time_iso8601_ms",'
+      '"ip":"$remote_addr",'
+      '"method":"$request_method",'
+      '"status":$status,'
+      '"resp_time":$request_time,'
+      '"request_length":$request_length,'
+      '"resp_body_size":$body_bytes_sent,'
+      '"uri":"$request_uri",'
+      '"user_agent":"$http_user_agent",'
+      '"host":"$http_host",'
+      '"upstream_addr":"$upstream_addr",'
+      '"upstream_response_time":"$upstream_response_time",'
+      '"request_id":"$request_id",'
+      '"source":"nginx"'
+    '}';
+
+    upstream django {
+      zone django 64k;
+      keepalive 32;
+      # Points to the Django app service in k8s
+      server {{ include "qfieldcloud.fullname" . }}-app:8000 max_fails=3 fail_timeout=10s;
+    }
+
+    server {
+      listen 80;
+      server_name _;
+
+      client_max_body_size {{ .Values.nginx.clientMaxBodySize }};
+      keepalive_timeout 5;
+
+      access_log /var/log/nginx/access.log json-logger;
+      error_log /var/log/nginx/error.log {{ .Values.nginx.errorLogLevel }};
+
+      root /var/www/html/;
+
+      # Health check endpoint (for k8s probes)
+      location /healthz {
+        access_log off;
+        return 200 "ok\n";
+        add_header Content-Type text/plain;
+      }
+
+      proxy_http_version 1.1;
+      proxy_set_header Connection '';
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Request-Id $request_id;
+      proxy_set_header Host $http_host;
+
+      proxy_connect_timeout {{ .Values.nginx.proxyConnectTimeout }};
+      proxy_read_timeout {{ .Values.nginx.proxyReadTimeout }};
+      proxy_send_timeout {{ .Values.nginx.proxySendTimeout }};
+      proxy_redirect off;
+      proxy_intercept_errors off;
+
+      location ^~ /api/ {
+        proxy_pass http://django;
+      }
+
+      location ^~ /pages/ {
+        try_files $uri =404;
+        access_log off;
+        expires 1h;
+      }
+
+      location /swagger.yaml {
+        proxy_pass http://django;
+      }
+
+      location /storage-download/ {
+        internal;
+        set $redirect_uri "$upstream_http_redirect_uri";
+        set $webdav_auth "$upstream_http_webdav_auth";
+        set $file_range "$upstream_http_file_range";
+
+        resolver kube-dns.kube-system.svc.cluster.local valid=5s ipv6=off;
+
+        proxy_max_temp_file_size 0;
+        proxy_buffering off;
+        proxy_http_version 1.1;
+        proxy_ssl_server_name on;
+        proxy_set_header Connection '';
+        proxy_set_header Authorization $webdav_auth;
+        proxy_set_header Cookie '';
+        proxy_set_header Content-Type '';
+        proxy_set_header Accept-Encoding '';
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Range $file_range;
+
+        proxy_hide_header Access-Control-Allow-Credentials;
+        proxy_hide_header X-Amz-Request-Id;
+        proxy_hide_header X-Amz-Storage-Class;
+        proxy_hide_header Set-Cookie;
+        proxy_ignore_headers Set-Cookie;
+
+        proxy_intercept_errors on;
+        proxy_pass $redirect_uri;
+        error_page 404 =404 /pages/404.html;
+        error_page 403 =403 /pages/403.html;
+      }
+
+      location / {
+        try_files $uri @proxy_to_app;
+      }
+
+      location @proxy_to_app {
+        error_page 403 =403 /pages/403.html;
+        error_page 404 =404 /pages/404.html;
+        error_page 502 503 504 =503 /pages/loading.html;
+        error_page 500 501 505 @handle_500_error;
+
+        proxy_intercept_errors on;
+        proxy_pass http://django;
+      }
+
+      location @handle_500_error {
+        add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" always;
+        expires -1;
+        try_files /pages/500.html =404;
+      }
+    }
