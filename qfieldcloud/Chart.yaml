@@ -1,6 +1,13 @@
 apiVersion: v2
 name: qfieldcloud
-description: QFieldCloud Helm Chart
+description: QFieldCloud - A Helm chart for Kubernetes deployment
 type: application
 version: 0.1.0
 appVersion: "latest"
+keywords:
+  - qfieldcloud
+  - qgis
+  - gis
+home: https://github.com/opengisch/QFieldCloud
+maintainers:
+  - name: platform-team
