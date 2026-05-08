@@ -44,8 +44,10 @@ spec:
             allowPrivilegeEscalation: true
       volumes:
         - name: jenkins-data
-          persistentVolumeClaim:
-            claimName: {{ include "jenkins.fullname" . }}-pvc
+          # [핵심 수정] persistentVolumeClaim 대신 hostPath를 직접 사용합니다.
+          hostPath:
+            path: {{ .Values.persistence.hostPath | quote }}
+            type: DirectoryOrCreate
         - name: docker-sock
           hostPath:
             path: /var/run/docker.sock
