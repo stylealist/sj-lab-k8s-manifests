@@ -96,10 +96,12 @@ qgis:
     pullPolicy: IfNotPresent
   resources:
     limits:
-      cpu: 1000m
+      #cpu: 1000m
+      cpu: 300m
       memory: 1Gi
     requests:
-      cpu: 500m
+      #cpu: 500m
+      cpu: 100m
       memory: 512Mi
   transformationGrids:
     # If true, will download transformation grids as an init container
@@ -118,13 +120,15 @@ worker:
     target: worker_wrapper_runtime  # Use the worker wrapper runtime that includes Docker client
   resources:
     limits:
-      cpu: 500m
+      #cpu: 500m
+      cpu: 300m
       memory: 512Mi
     requests:
-      cpu: 250m
+      #cpu: 250m
+      cpu: 100m
       memory: 256Mi
 
-# Memcached configuration
+# Memcached configuratio  n
 memcached:
   enabled: true
   image:
@@ -175,10 +179,12 @@ ingress:
 # Resource configuration
 resources:
   limits:
-    cpu: 500m
+    #cpu: 500m
+    cpu: 300m
     memory: 512Mi
   requests:
-    cpu: 250m
+    #cpu: 250m
+    cpu: 100m
     memory: 256Mi
 
 # Pod configuration
