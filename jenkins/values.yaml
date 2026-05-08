@@ -1,3 +1,4 @@
+#test
 image:
   repository: sj-lab-registry.kr.ncr.ntruss.com/jenkins-with-docker
   tag: latest
