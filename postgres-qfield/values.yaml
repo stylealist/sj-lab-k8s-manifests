@@ -1,0 +1,21 @@
+auth:
+  database: qfield
+  username: stylealist
+  password: "!@xogml159"
+
+image:
+  repository: postgis/postgis
+  tag: "17-3.4"
+  #tag: "17.5-alpine"
+
+fullnameOverride: "postgresql"
+
+service:
+  port: 5433
+  nodePort: 30019
+
+volume:
+  enabled: true
+  name: postgresql-qfield-storage
+  mountPath: /var/lib/postgresql/data
+  hostPath: /home/kuber-volume/postgres-qfield
