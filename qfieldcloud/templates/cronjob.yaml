@@ -36,6 +36,11 @@ spec:
                     secretKeyRef:
                       name: {{ include "qfieldcloud.fullname" . }}-django
                       key: secret-key
+                - name: SALT_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "qfieldcloud.fullname" . }}-django
+                      key: salt-key
                 - name: DEBUG
                   value: {{ .Values.django.settings.debug | quote }}
                 - name: ENVIRONMENT
