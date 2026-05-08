@@ -35,14 +35,14 @@ django:
     dsn: ""
     release: ""
     sampleRate: 0.1
-#  email:
-#    host: ""
-#    useTls: true
-#    useSsl: false
-#    port: 587
-#    hostUser: ""
-#    hostPassword: ""  # Should be provided via secret
-#    defaultFromEmail: "noreply@example.com"
+  email:
+    host: ""
+    useTls: true
+    useSsl: false
+    port: 587
+    hostUser: ""
+    hostPassword: ""  # Should be provided via secret
+    defaultFromEmail: "noreply@example.com"
   storage:
     type: "s3"  # local, s3, etc.
     accessKeyId: "minioadmin"  # Default from env.example
