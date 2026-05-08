@@ -71,8 +71,8 @@ django:
 database:
   # External database configuration
   external: true
-  host: ""
-  port: 5432
+  host: "211.188.62.54"
+  port: 30019
   name: "qfieldcloud"
   user: "qfieldcloud"
   password: ""  # Should be provided via secret
