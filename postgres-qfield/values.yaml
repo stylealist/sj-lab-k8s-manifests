@@ -11,7 +11,7 @@ image:
 fullnameOverride: "postgresql-qfield"
 
 service:
-  port: 5433
+  port: 5432
   nodePort: 30019
 
 volume:
