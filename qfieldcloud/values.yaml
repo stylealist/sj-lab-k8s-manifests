@@ -162,7 +162,7 @@ cronJobs:
 # Service configuration
 service:
   type: ClusterIP
-  port: 80
+  port: 8000
 
 # Ingress configuration
 ingress:
