@@ -195,10 +195,11 @@ affinity: {}
 # Persistent volume configuration
 persistence:
   transformationGrids:
-    enabled: true
-    size: 1Gi
-    accessMode: ReadWriteOnce
-    storageClass: "manual"  # Use default storage class if empty
+    enabled: false
+    #enabled: true
+    #size: 1Gi
+    #accessMode: ReadWriteOnce
+    #storageClass: ""  # Use default storage class if empty
 
 serviceAccount:
   create: true

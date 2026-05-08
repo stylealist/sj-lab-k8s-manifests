@@ -23,7 +23,7 @@ spec:
       initContainers:
         - name: download-transformation-grids
           image: k3rnelpan1c/alpine-wget:latest
-          command: 
+          command:
             - /bin/sh
             - -c
             - |
@@ -117,7 +117,7 @@ spec:
             - name: QFIELDCLOUD_HOST
               value: {{ (index .Values.ingress.hosts 0).host | quote }}
             - name: QFIELDCLOUD_QGIS_SERVICE_URL
-              value: "http://localhost:8000"  # QGIS service is available on localhost
+              value: "http://localhost:8000"
           volumeMounts:
             - name: transformation-grids
               mountPath: /transformation_grids
@@ -142,12 +142,8 @@ spec:
             {{- toYaml .Values.qgis.resources | nindent 12 }}
       volumes:
         - name: transformation-grids
-          {{- if .Values.persistence.transformationGrids.enabled }}
-          persistentVolumeClaim:
-            claimName: transformation-grids-{{ .Release.Name }}-worker-$(POD_NAME)
-          {{- else }}
+          # persistence.enabled 여부와 상관없이 무조건 emptyDir을 사용하도록 고정했습니다.
           emptyDir: {}
-          {{- end }}
         - name: docker-socket
           hostPath:
             path: /var/run/docker.sock
@@ -164,15 +160,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-  volumeClaimTemplates:
-    - metadata:
-        name: transformation-grids
-      spec:
-        accessModes: [ "ReadWriteOnce" ]
-        {{- if .Values.persistence.transformationGrids.storageClass }}
-        storageClassName: {{ .Values.persistence.transformationGrids.storageClass | quote }}
-        {{- end }}
-        resources:
-          requests:
-            storage: {{ .Values.persistence.transformationGrids.size | quote }}
-{{- end }} 
+{{- end }}
