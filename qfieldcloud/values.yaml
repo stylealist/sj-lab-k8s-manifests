@@ -198,7 +198,7 @@ persistence:
     enabled: true
     size: 1Gi
     accessMode: ReadWriteOnce
-    storageClass: ""  # Use default storage class if empty
+    storageClass: "manual"  # Use default storage class if empty
 
 serviceAccount:
   create: true
