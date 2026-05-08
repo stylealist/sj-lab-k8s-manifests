@@ -27,6 +27,8 @@ spec:
                 - manage.py
                 - runcrons
               env:
+                - name: DJANGO_USE_X_FORWARDED_HOST
+                  value: "1"
                 - name: DJANGO_ALLOWED_HOSTS
                   value: {{ .Values.django.settings.allowedHosts | quote }}
                 - name: DJANGO_SETTINGS_MODULE

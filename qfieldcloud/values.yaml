@@ -22,6 +22,7 @@ django:
     secretKey: "sjlab-secret-key"
     saltKey: "sjlab-salt-key-random-1234" # 이 부분을 추가
     allowedHosts: "*"
+    useXForwardedHost: "1"        # ← 이거 추가
     settingsModule: "qfieldcloud.settings"
     accountEmailVerification: "none"
     useI18n: 1
