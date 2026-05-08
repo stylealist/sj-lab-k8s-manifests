@@ -153,6 +153,9 @@ cronJobs:
     pullPolicy: IfNotPresent
   #schedule: "@every 1m"
   schedule: "* * * * *"  # 매 1분 (동일한 의미)
+  backoffLimit: 3
+  failedJobsHistoryLimit: 3
+  successfulJobsHistoryLimit: 1
   resources:
     limits:
       cpu: 100m
