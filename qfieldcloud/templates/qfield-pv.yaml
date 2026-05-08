@@ -1,4 +1,3 @@
-# qfield-pv.yaml
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -6,8 +5,10 @@ metadata:
 spec:
   capacity:
     storage: 1Gi
+  volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
-  storageClassName: manual
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual  # values.yaml의 storageClass 설정값과 반드시 일치해야 함
   hostPath:
-    path: /home/kuber-volume/qfield-worker  # 실제 경로 확인 필수
+    path: /home/kuber-volume/qfield-worker
