@@ -4,13 +4,18 @@ metadata:
   name: {{ include "postgresql.fullname" . }}
 spec:
   replicas: 1
+  ## [변경 1] hostPath 단일 디렉토리 파일 락 충돌 방지를 위해 Recreate 전략 추가
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
-      app: {{ include "postgresql.name" . }}
+      ## [변경 2] 기존 'postgresql.name' -> 'postgresql.fullname'으로 변경 (라벨 중복 방지 핵심)
+      app: {{ include "postgresql.fullname" . }}
   template:
     metadata:
       labels:
-        app: {{ include "postgresql.name" . }}
+        ## [변경 3] Pod 라벨도 fullname으로 일치시킴
+        app: {{ include "postgresql.fullname" . }}
     spec:
       containers:
         - name: postgresql
