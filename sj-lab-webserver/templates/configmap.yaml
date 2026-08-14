@@ -7,6 +7,7 @@ metadata:
     checksum/nginx-conf: {{ .Files.Get "files/nginx.conf" | sha256sum }}
     checksum/nginx-set-conf: {{ .Files.Get "files/nginx-set.conf" | sha256sum }}
 data:
+  proxy-body-size: "500M"
   nginx.conf: |-
 {{ .Files.Get "files/nginx.conf" | indent 4 }}
   nginx-set.conf: |-
