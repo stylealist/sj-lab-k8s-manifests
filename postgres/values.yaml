@@ -10,6 +10,8 @@ image:
 
 fullnameOverride: "postgresql"
 
+nodeName: "sj-postgres"
+
 service:
   port: 5432
   nodePort: 30017
