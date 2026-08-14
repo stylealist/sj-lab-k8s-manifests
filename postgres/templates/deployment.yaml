@@ -4,9 +4,6 @@ metadata:
   name: {{ include "postgresql.fullname" . }}
 spec:
   replicas: 1
-  # hostPath 단일 디렉토리 락(Lock) 충돌 방지
-  strategy:
-    type: Recreate
   selector:
     matchLabels:
       app: {{ include "postgresql.name" . }}
@@ -15,11 +12,6 @@ spec:
       labels:
         app: {{ include "postgresql.name" . }}
     spec:
-      # [핵심] hostPath 데이터가 존재하는 특정 노드로만 스케줄링
-      {{- if .Values.nodeName }}
-      nodeSelector:
-        kubernetes.io/hostname: {{ .Values.nodeName | quote }}
-      {{- end }}
       containers:
         - name: postgresql
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
@@ -32,20 +24,13 @@ spec:
               value: {{ .Values.auth.username | quote }}
             - name: POSTGRES_PASSWORD
               value: {{ .Values.auth.password | quote }}
-            # 마운트 루트에 lost+found 등이 있을 때 initdb 실패를 방지하기 위해 하위 디렉토리 권장
-            - name: PGDATA
-              value: "{{ .Values.volume.mountPath }}/pgdata"
             - name: TZ
               value: "Asia/Seoul"
           volumeMounts:
-            {{- if .Values.volume.enabled }}
             - name: {{ .Values.volume.name }}
               mountPath: {{ .Values.volume.mountPath }}
-            {{- end }}
       volumes:
-        {{- if .Values.volume.enabled }}
         - name: {{ .Values.volume.name }}
           hostPath:
             path: {{ .Values.volume.hostPath | quote }}
             type: DirectoryOrCreate
-        {{- end }}
