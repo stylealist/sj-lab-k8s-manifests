@@ -6,11 +6,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ include "postgresql.name" . }}
+      app: {{ include "postgresql.fullname" . }}
   template:
     metadata:
       labels:
-        app: {{ include "postgresql.name" . }}
+        app: {{ include "postgresql.fullname" . }}
     spec:
       containers:
         - name: postgresql
