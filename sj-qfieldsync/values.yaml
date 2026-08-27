@@ -13,7 +13,7 @@ env:
 persistence:
   enabled: true
   mountPath: /app/qfield
-
+# 리소스 제한없음
 resources: {}
 
 fullnameOverride: sj-qfieldsync
