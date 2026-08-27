@@ -1,0 +1,25 @@
+replicaCount: 1 # 💡 중요: 중복 실행 및 DB Lock 충돌 방지를 위해 싱글톤(1) 유지
+
+image:
+  repository: sj-lab-registry.kr.ncr.ntruss.com/sj-qfieldsync
+  tag: 1 # Jenkins 파이프라인(sed)에 의해 자동 변경됨
+  pullSecret: ncp-registry-secret
+
+env:
+  APP_ENV: prod
+  CHECK_INTERVAL: "30"
+
+# 다운로드 작업 디스크 볼륨 설정 (emptyDir 사용)
+persistence:
+  enabled: true
+  mountPath: /app/qfield
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 2Gi
+  requests:
+    cpu: 200m
+    memory: 512Mi
+
+fullnameOverride: sj-qfieldsync

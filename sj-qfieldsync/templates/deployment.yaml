@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sj-qfieldsync.fullname" . }}
+  labels:
+    app: {{ include "sj-qfieldsync.name" . }}
+  annotations:
+    configmap-checksum: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate # 💡 이전 Pod가 완전히 종료된 후 새 Pod를 띄워 중복 다운로드 방지
+  selector:
+    matchLabels:
+      app: {{ include "sj-qfieldsync.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "sj-qfieldsync.name" . }}
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: APP_ENV
+              value: {{ .Values.env.APP_ENV | quote }}
+            - name: TZ
+              value: "Asia/Seoul"
+            - name: CONFIG_PATH
+              value: "/app/config/config.yaml"
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+            - name: data-volume
+              mountPath: {{ .Values.persistence.mountPath }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "sj-qfieldsync.fullname" . }}-config
+        - name: data-volume
+          emptyDir: {}

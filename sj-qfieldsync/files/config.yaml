@@ -1,0 +1,7 @@
+sync:
+  check_interval: 30
+  target_schema: "qfield"
+
+qfield_cloud:
+  url: "https://qfield.sj-lab.co.kr/api/v1/"
+  username: "admin"
