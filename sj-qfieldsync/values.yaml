@@ -2,7 +2,7 @@ replicaCount: 1 # 💡 중요: 중복 실행 및 DB Lock 충돌 방지를 위해
 
 image:
   repository: sj-lab-registry.kr.ncr.ntruss.com/sj-qfieldsync
-  tag: 5
+  tag: 6
   pullSecret: ncp-registry-secret
 
 env:
