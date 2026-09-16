@@ -75,3 +75,7 @@ helm template <chart-dir> | kubectl apply --dry-run=server -f -
 - `.claude/agents/reviewer.md` — 이 저장소의 컨벤션(위 내용) 기준으로 Helm 차트 변경을 검토하는 서브에이전트.
 - `.claude/hooks/helm-lint.js` + `.claude/settings.json` — `templates/*.yaml` 또는 `values.yaml`을 Edit/Write한 직후 자동으로 `helm lint`를 돌려 결과를 알려주는 PostToolUse 훅.
 - `.claude/skills/new-service/SKILL.md` — 이 저장소 컨벤션에 맞춰 새 서비스용 Helm 차트를 스캐폴딩하는 스킬.
+
+## 통합 허브
+
+저장소를 넘나드는 작업(DB → 백엔드 → 디스커버리 → 게이트웨이 → 프론트엔드 → 배포)의 총괄 기준 저장소는 `C:\developer\workspace\mapservice-rest`입니다. 시스템 전체 구조·API 계약·배포 경로는 그 저장소의 `docs/system-architecture.md`, 로컬 포트·기동 순서·CORS는 `docs/dev-environment.md`에 있고, MCP(GitHub/DB)와 로컬 비밀값도 그 저장소에서만 관리합니다.
