@@ -2,7 +2,7 @@
 replicaCount: 1
 image:
   repository: sj-lab-registry.kr.ncr.ntruss.com/sj-lab-discoveryserver
-  tag: 83
+  tag: 84
   pullPolicy: IfNotPresent
   pullSecrets:
     - name: ncp-registry-secret
