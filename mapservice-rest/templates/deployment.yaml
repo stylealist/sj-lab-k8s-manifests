@@ -30,6 +30,23 @@ spec:
               value: {{ .Values.env.springConfigLocation }}
             - name: JAVA_TOOL_OPTIONS
               value: "-Duser.timezone=Asia/Seoul"
+            {{- if .Values.qfield }}
+            # QFieldCloud 첨부 파일 중계용. Secret 이 없어도 기동되도록 optional 로 둔다.
+            - name: QFIELD_BASE_URL
+              value: {{ .Values.qfield.baseUrl | quote }}
+            - name: QFIELD_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.qfield.secretName }}
+                  key: {{ .Values.qfield.usernameKey }}
+                  optional: true
+            - name: QFIELD_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.qfield.secretName }}
+                  key: {{ .Values.qfield.passwordKey }}
+                  optional: true
+            {{- end }}
           ports:
             - containerPort: 8080
           volumeMounts:

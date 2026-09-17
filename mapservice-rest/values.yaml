@@ -14,4 +14,15 @@ env:
   springProfile: prod
   springConfigLocation: "classpath:/,file:/app/config/"
 
+# 시설물 첨부 파일(사진·음성·영상) 중계용 QFieldCloud 계정
+# 값은 Secret 으로만 주입한다(차트에 평문으로 적지 말 것).
+#   kubectl create secret generic qfield-credentials -n sj-lab \
+#     --from-literal=username='<계정>' --from-literal=password='<비밀번호>'
+# Secret 이 없으면 파드는 정상 기동하고 미디어 엔드포인트만 503 을 반환한다(optional: true).
+qfield:
+  baseUrl: https://qfield.sj-lab.co.kr
+  secretName: qfield-credentials
+  usernameKey: username
+  passwordKey: password
+
 fullnameOverride: mapservice-rest
