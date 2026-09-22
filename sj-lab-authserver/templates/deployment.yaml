@@ -39,6 +39,19 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.auth.jwt.secretName }}
                   key: {{ .Values.auth.jwt.secretKey }}
+            # 체험용 계정은 선택 기능이라 optional — Secret 이 없어도 파드는 뜨고 데모 버튼만 503
+            - name: AUTH_DEMO_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.auth.demo.secretName }}
+                  key: {{ .Values.auth.demo.usernameKey }}
+                  optional: true
+            - name: AUTH_DEMO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.auth.demo.secretName }}
+                  key: {{ .Values.auth.demo.passwordKey }}
+                  optional: true
           ports:
             - containerPort: 8080
           volumeMounts:

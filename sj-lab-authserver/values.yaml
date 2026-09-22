@@ -23,5 +23,13 @@ auth:
   jwt:
     secretName: auth-jwt-secret
     secretKey: secret
+  # 로그인 페이지 "체험용 계정으로 로그인" 버튼이 쓰는 QFieldCloud 계정.
+  # public 저장소라 값은 Secret 으로만 주입한다. 없으면 데모 버튼만 503(파드는 정상 기동).
+  #   kubectl create secret generic auth-demo-credentials -n sj-lab \
+  #     --from-literal=username='<데모 아이디>' --from-literal=password='<데모 비밀번호>'
+  demo:
+    secretName: auth-demo-credentials
+    usernameKey: username
+    passwordKey: password
 
 fullnameOverride: sj-lab-authserver
