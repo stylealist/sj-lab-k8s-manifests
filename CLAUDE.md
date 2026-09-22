@@ -43,6 +43,8 @@ helm template <chart-dir> | kubectl apply --dry-run=server -f -
 
 ## 보안 관련 주의사항
 
+차트가 참조하는 Secret(`ncp-registry-secret`, `qfield-credentials`, `auth-jwt-secret`, `auth-demo-credentials`)의 용도·필수 여부·확인 명령어는 총괄 허브의 `C:\developer\workspace\mapservice-rest\docs\k8s-secrets.md`에 정리돼 있습니다. `secretKeyRef`/`pullSecret`을 추가·변경하면 그 문서도 함께 고치세요.
+
 `postgres/values.yaml`, `postgres-qfield/values.yaml`에 DB 비밀번호가 **평문으로 커밋**돼 있습니다. 새로운 차트나 값을 추가할 때 이 패턴을 따라 하지 말고, 가능하면 Secret 리소스나 외부 시크릿 매니저 사용을 제안하세요. 기존 평문 값을 다룰 때도 대화나 커밋 메시지, 새로 만드는 문서에 값을 그대로 옮겨 적지 마세요.
 
 ## 참고
