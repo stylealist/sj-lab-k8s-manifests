@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sj-lab-authserver.fullname" . }}
+  labels:
+    app: {{ include "sj-lab-authserver.name" . }}
+  annotations:
+    configmap-checksum: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    service-checksum: {{ include (print $.Template.BasePath "/service.yaml") . | sha256sum }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "sj-lab-authserver.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "sj-lab-authserver.name" . }}
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ .Values.env.springProfile }}
+            - name: SPRING_CONFIG_LOCATION
+              value: {{ .Values.env.springConfigLocation }}
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Duser.timezone=Asia/Seoul"
+            # 이 서버가 발급하는 JWT 서명 키. Secret 이 없으면 JwtService.validateSecret()이
+            # 기동 자체를 막으므로(로컬 전용 기본값을 운영에서 쓰지 않기 위한 의도된 동작),
+            # qfield-credentials와 달리 optional 로 두지 않는다 — Secret 이 없으면 파드가
+            # CreateContainerConfigError 로 바로 드러나야 한다.
+            - name: AUTH_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.auth.jwt.secretName }}
+                  key: {{ .Values.auth.jwt.secretKey }}
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "sj-lab-authserver.fullname" . }}-config

@@ -1,0 +1,17 @@
+eureka:
+  client:
+    tls:
+      enabled: false
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: https://eureka.sj-lab.co.kr/eureka
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${spring.cloud.client.hostname}
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+
+auth:
+  cookie:
+    secure: true

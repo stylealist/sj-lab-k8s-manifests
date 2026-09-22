@@ -1,0 +1,27 @@
+image:
+  repository: sj-lab-registry.kr.ncr.ntruss.com/sj-lab-authserver
+  tag: 1
+  pullSecret: ncp-registry-secret
+
+spring:
+  profile: prod
+
+service:
+  type: ClusterIP
+  port: 8080
+
+env:
+  springProfile: prod
+  springConfigLocation: "classpath:/,file:/app/config/"
+
+# 이 서버가 발급하는 JWT 서명 키. Secret 없이는 애초에 기동되지 않는다
+# (JwtService.validateSecret()이 local 프로파일이 아닌데 기본 시크릿이면 기동을 막음).
+# 값은 Secret 으로만 주입한다(차트에 평문으로 적지 말 것):
+#   kubectl create secret generic auth-jwt-secret -n sj-lab \
+#     --from-literal=secret="$(openssl rand -base64 32)"
+auth:
+  jwt:
+    secretName: auth-jwt-secret
+    secretKey: secret
+
+fullnameOverride: sj-lab-authserver
