@@ -1,6 +1,6 @@
 image:
   repository: sj-lab-registry.kr.ncr.ntruss.com/sj-lab-authserver
-  tag: 2
+  tag: 3
   pullSecret: ncp-registry-secret
 
 spring:
