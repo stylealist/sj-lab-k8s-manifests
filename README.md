@@ -1,115 +1,94 @@
-# sj-lab-k8s-manifests — 배포 매니페스트 (GitOps 소스)
+# sj-lab-k8s-manifests — Kubernetes 매니페스트 및 GitOps 배포 저장소
 
-> sj-lab 전 서비스의 **Helm 차트 모음**이자 ArgoCD가 바라보는 **단일 진실 공급원(Single Source of Truth)** 입니다.
-> 애플리케이션 코드는 없고, "무엇이 어떤 설정으로 클러스터에 떠 있는가"가 전부 이 저장소에 있습니다.
-
-| | |
-|---|---|
-| **배포 방식** | Jenkins(빌드·이미지 push) → 이 저장소의 `image.tag` 자동 커밋 → ArgoCD 동기화(selfHeal·prune) |
-| **레지스트리** | `sj-lab-registry.kr.ncr.ntruss.com` (NCP Container Registry) |
-| **네임스페이스** | 대부분 `sj-lab` |
+`sj-lab-k8s-manifests`는 sj-lab 분산 플랫폼의 전체 인프라 리소스와 마이크로서비스 배포 명세를 관리하는 Helm 차트 저장소이자, ArgoCD가 참조하는 단일 진실 공급원(Single Source of Truth, SSOT)입니다.
 
 ---
 
-## 1. 배포 파이프라인
+## 1. 저장소 역할 및 핵심 책임
 
-```
-개발자 git push (서비스 저장소)
-   │
-   ▼
-Jenkins ── 빌드 ── 이미지 push ──▶ NCP 레지스트리
-   │
-   └─ 이 저장소를 clone → <서비스>/values.yaml 의 image.tag 수정 → 커밋·push
-                                   │
-                                   ▼
-                           ArgoCD(자동 동기화)
-                                   │
-                                   ▼
-                              Kubernetes 롤아웃
-```
-
-**`image.tag`는 Jenkins가 관리하는 값**입니다. 사람이 임의로 낮추거나 되돌리지 않습니다(다음 빌드와 충돌).
+- **GitOps 배포 자동화의 단일 진실 공급원**: 모든 클러스터 워크로드(백엔드, 게이트웨이, 배치, DB 등)의 상태를 선언적 Helm 차트로 정의하고 ArgoCD를 통해 실시간 자동 동기화(Auto-Sync)합니다.
+- **CI/CD 파이프라인 연계**: Jenkins 파이프라인에서 컨테이너 이미지를 빌드/푸시한 후, 본 저장소의 `values.yaml` 내 `image.tag`를 자동 갱신하여 클러스터 무중단 롤아웃을 트리거합니다.
+- **설정 및 기밀정보(Secret) 외부화 관리**: 운영 설정(`application-prod.yml`)을 ConfigMap으로 분리하고, 인증 토큰 및 DB 패스워드 등 민감정보를 Kubernetes Secret으로 격리 주입합니다.
 
 ---
 
-## 2. 차트 목록
+## 2. 배포 아키텍처 및 CI/CD 파이프라인
 
-| 차트 | 이미지 | 노출 | 비고 |
+### 2.1 GitOps 기반 배포 흐름도
+
+```
+[개발자 소스 Push] (개별 서비스 Repo)
+       │
+       ▼ Webhook
+[Jenkins CI Server]
+  ├── 1. 소스 빌드 및 단위 테스트
+  ├── 2. Docker 이미지 빌드 및 태깅
+  ├── 3. NCP Container Registry 푸시 (sj-lab-registry.kr.ncr.ntruss.com)
+  └── 4. [sj-lab-k8s-manifests] Clone 후 values.yaml 의 image.tag 수정 및 자동 Push
+               │
+               ▼ Git 변경 감지
+[ArgoCD GitOps Engine]
+  ├── 1. 선언된 Helm 차트와 실제 클러스터 상태 비교 (Diff)
+  ├── 2. Auto-Sync 트리거 (Self-Heal, Prune 활성화)
+  └── 3. Kubernetes 리소스 롤링 업데이트 (RollingUpdate)
+               │
+               ▼
+[Kubernetes Cluster (sj-lab Namespace)]
+```
+
+---
+
+## 3. 관리 대상 Helm 차트 목록
+
+| 차트 디렉터리 | 대상 서비스 | 쿠버네티스 서비스 타입 | 비고 |
 |---|---|---|---|
-| `apigateway` | `sj-lab-apigateway` | NodePort 30089 → 8100 | Spring Cloud Gateway |
-| `discoveryserver` | `sj-lab-discoveryserver` | NodePort 30087 → 8761 | Eureka, `replicaCount: 1` 고정 |
-| `mapservice-rest` | `mapservice-rest` | ClusterIP | 지도·시설물 API |
-| `sj-lab-scheduler` | `sj-lab-scheduler` | ClusterIP | 공공데이터 수집 배치 |
-| `sj-lab-authserver` | `sj-lab-authserver` | ClusterIP | 로그인·JWT |
-| `fast-api-ai` | `fast-api-ai` | ClusterIP 80 → 8000 | FastAPI |
-| `sj-qfieldsync` | `sj-qfieldsync` | — | 동기화 워커 |
-| `sj-lab-webserver` | `nginx` | NodePort 32080 | 정적 사이트(허브·지도) 서빙 |
-| `postgres`, `postgres-qfield` | PostGIS | — | DB |
-| `geoserver`, `jenkins`, `dashboard` | 외부 이미지 | — | 부가 도구 |
-| `argocd` | — | — | ArgoCD가 자기 자신을 관리하는 `Application` 리소스 |
+| `apigateway` | Spring Cloud Gateway | NodePort (30089 -> 8100) | 플랫폼 단일 진입점 |
+| `discoveryserver` | Netflix Eureka Server | NodePort (30087 -> 8761) | 서비스 레지스트리 (단일 복제본) |
+| `mapservice-rest` | 지도/시설물 GeoJSON API | ClusterIP (8080) | GIS 백엔드 서비스 |
+| `sj-lab-scheduler` | 공공데이터 수집 배치 | ClusterIP (8080) | 정기 크론 수집 배치 |
+| `sj-lab-authserver` | 중앙 인증 / SSO | ClusterIP (8080) | JWT 발급 및 위임 인증 |
+| `fast-api-ai` | Python AI 마이크로서비스 | ClusterIP (80 -> 8000) | Uvicorn 기반 서빙 |
+| `sj-qfieldsync` | 현장 데이터 동기화 워커 | Deployment (단독 백그라운드) | 30초 주기 동기화 프로세스 |
+| `sj-lab-webserver` | NGINX 정적 웹서버 | NodePort (32080) | 정적 웹(허브, 지도) 서빙 |
+| `postgres` / `postgres-qfield` | PostGIS 데이터베이스 | ClusterIP (5432) | 공간 데이터 및 QField 동기화 DB |
+| `argocd` / `jenkins` / `dashboard` | DevOps 도구군 | ClusterIP / NodePort | 클러스터 운영 및 CI/CD 플랫폼 |
 
 ---
 
-## 3. 면접에서 봐주셨으면 하는 부분
+## 4. 핵심 엔지니어링 구현 상세
 
-### ① 설정 외부화 원칙을 전 서비스에 동일하게
-
-Spring 서비스는 모두 같은 패턴입니다 — `files/application-prod.yml`을 ConfigMap으로 마운트하고 `SPRING_PROFILES_ACTIVE`, `SPRING_CONFIG_LOCATION=classpath:/,file:/app/config/`로 주입합니다. 서비스 저장소는 public이므로 **환경별 값과 비밀값이 코드에 섞이지 않습니다.**
-
-ConfigMap이 있는 차트는 `deployment.yaml`에 체크섬 애노테이션을 넣어, **설정만 바꿔도 파드가 자동 재시작**되도록 했습니다.
+### 4.1 ConfigMap 체크섬 기반 무중단 롤링 업데이트
+Spring 마이크로서비스의 환경 설정(`files/application-prod.yml`)이 ConfigMap으로 마운트되는 구조에서, 설정 파일만 변경되었을 때 파드가 이를 즉시 인식하여 재기동되도록 Deployment 템플릿에 ConfigMap 체크섬 애노테이션을 적용했습니다:
 
 ```yaml
-annotations:
-  configmap-checksum: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+spec:
+  template:
+    metadata:
+      annotations:
+        configmap-checksum: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
 ```
+이를 통해 설정 변경 시 별도의 수동 재시작 명령 없이도 Kubernetes가 새로운 설정을 반영한 Pod로 안전하게 롤링 업데이트를 수행합니다.
 
-### ② Secret은 "필수"와 "선택"을 구분
+### 4.2 시크릿(Secret) 주입 정책 및 Fail-Fast 설계
+기밀정보 누락으로 인해 서비스가 불완전하게 동작하는 것을 방지하기 위해 중요도에 따른 엄격한 주입 정책을 적용했습니다:
+- **필수 시크릿 (`auth-jwt-secret`, `ncp-registry-secret`)**: 미주입 시 파드 기동을 강제 차단(`CreateContainerConfigError`)하여 안전하지 않은 기본값으로 서비스가 구동되는 보안 사고를 원천 방지.
+- **선택적 시크릿 (`qfield-credentials`, `auth-demo-credentials`)**: `optional: true` 설정을 적용하여 외부 서비스 계정이 일시적으로 부재하더라도 핵심 API는 정상 작동하고 부가 기능(원격 미디어 중계 등)만 부분 비활성화(503)되도록 설계.
 
-같은 `secretKeyRef`라도 서비스 성격에 따라 다르게 걸었습니다.
+---
 
-| Secret | 사용처 | 필수 여부 | 없을 때 |
-|---|---|---|---|
-| `auth-jwt-secret` | 로그인 서버 서명 키 | **필수** | 파드가 뜨지 않음(의도) — 공개 기본값으로 서명하지 않기 위함 |
-| `qfield-credentials` | 첨부 파일 중계 계정 | 선택(`optional: true`) | 파드 정상, **중계 API만 503** |
-| `auth-demo-credentials` | 체험 계정 | 선택 | 파드 정상, **데모 버튼만 503** |
-| `ncp-registry-secret` | 이미지 pull | 필수 | `ImagePullBackOff` |
+## 5. 차트 검증 및 유지보수 가이드
 
-"조용히 잘못된 상태로 뜨는 것"과 "부가 기능만 죽는 것"을 구분해, 사고가 배포 시점에 드러나게 했습니다. 이름·용도·확인 명령은 총괄 저장소의 `docs/k8s-secrets.md`에 정리했습니다(값은 기록하지 않음).
-
-### ③ 차트 수정 시 검증 루틴
-
+### 매니페스트 린트 및 렌더링 검증
+차트 템플릿을 수정한 후 클러스터 배포 전 유효성을 검증하는 표준 절차입니다:
 ```bash
-helm lint <chart>
-helm template <chart> -f <chart>/values.yaml
-helm template <chart> | kubectl apply --dry-run=server -f -
+# 문법 린트 검증
+helm lint <chart_name>
+
+# 템플릿 렌더링 결과 확인
+helm template <chart_name> -f <chart_name>/values.yaml
+
+# 클러스터 Dry-Run 검증
+helm template <chart_name> | kubectl apply --dry-run=server -f -
 ```
 
-Jenkins 자동 커밋이 계속 쌓이므로 **수정 전 `git pull`** 은 필수입니다. 이 저장소에는 편집 후 자동으로 `helm lint`를 돌리는 훅도 넣어 두었습니다.
-
----
-
-## 4. 운영에서 겪은 것
-
-- **여러 저장소를 동시에 push하면** 매니페스트 자동 커밋 잡이 `cannot lock ref`로 실패할 수 있습니다(clone → sed → push 구조). 이미지는 이미 레지스트리에 있으므로 **해당 잡만 재실행**하면 복구됩니다.
-- **롤아웃 중 503**: 옛 파드 종료 ~ 새 파드의 Eureka 등록 사이에 게이트웨이가 잠시 503을 반환합니다. 무중단(`replicas: 2` + `maxUnavailable: 0` + preStop 지연)은 다음 과제로 정리해 두었습니다.
-- **Secret 누락 배포**: `auth-jwt-secret`이 없어 파드가 `CreateContainerConfigError`로 뜨지 않았는데, 이는 위 ②의 **의도된 실패**였습니다.
-
----
-
-## 5. 차트 컨벤션
-
-- 구조: `Chart.yaml` · `values.yaml` · `templates/_helpers.tpl` · `deployment.yaml` · `service.yaml` (+ 필요 시 `configmap.yaml` + `files/`)
-- 리소스 이름은 헬퍼(`{{ include "<chart>.fullname" . }}`)로 생성하고 하드코딩하지 않습니다
-- `resources: {}`(제한 없음)는 대부분 **의도된 설정**입니다(`argocd` 차트만 예외). 요청 없이 임의로 추가·제거하지 않습니다
-- 네임스페이스는 대부분 `sj-lab` 하드코딩, `dashboard`만 파라미터화
-
-## 주의
-
-- `postgres`·`postgres-qfield`의 `values.yaml`에 **DB 비밀번호가 평문으로 커밋**돼 있습니다(초기 구성의 잔재). 새 차트에서는 이 패턴을 따르지 말고 Secret을 쓰며, 기존 값도 정리 대상입니다.
-
-## 참고
-
-- 전체 구조·배포 경로: 총괄 저장소 `mapservice-rest`의 `docs/system-architecture.md`
-- Secret 목록·확인 명령: 같은 저장소의 `docs/k8s-secrets.md`
-- 정적 사이트(허브·지도) 배포: 같은 저장소의 `docs/deploy-static-sites.md`
-- 작업 규칙: 이 저장소의 `CLAUDE.md`
+> **주의**: Jenkins에 의해 `values.yaml`의 `image.tag`가 수시로 커밋되므로, 로컬에서 매니페스트 수정 전 반드시 `git pull --rebase`를 수행하여 원격 최신 상태를 동기화해야 합니다.
