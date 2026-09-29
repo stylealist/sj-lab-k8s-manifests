@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sj-lab-openapi.fullname" . }}
+  labels:
+    app: {{ include "sj-lab-openapi.name" . }}
+  annotations:
+    configmap-checksum: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    service-checksum: {{ include (print $.Template.BasePath "/service.yaml") . | sha256sum }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "sj-lab-openapi.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "sj-lab-openapi.name" . }}
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ .Values.env.springProfile }}
+            - name: SPRING_CONFIG_LOCATION
+              value: {{ .Values.env.springConfigLocation }}
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Duser.timezone=Asia/Seoul"
+            # 데이터 원천(중계 대상)과 로그인 확인 주소 — 둘 다 Eureka 서비스 이름
+            - name: OPENAPI_UPSTREAM_BASE_URL
+              value: {{ .Values.upstream.baseUrl | quote }}
+            - name: OPENAPI_AUTH_BASE_URL
+              value: {{ .Values.auth.baseUrl | quote }}
+            - name: OPENAPI_API_KEY_ENABLED
+              value: {{ .Values.apiKey.enabled | quote }}
+            - name: OPENAPI_API_KEY_DAILY_QUOTA
+              value: {{ .Values.apiKey.dailyQuota | quote }}
+            {{- if .Values.apiKey.enabled }}
+            # 키 기능을 켠 경우에만 DB 접속값을 넣는다. Secret 이 없으면 기동이 실패하므로
+            # (접속 주소가 비어 있으면 ApiKeyStoreConfig 가 막는다) optional 로 두지 않는다.
+            - name: OPENAPI_DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.apiKey.secretName }}
+                  key: {{ .Values.apiKey.urlKey }}
+            - name: OPENAPI_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.apiKey.secretName }}
+                  key: {{ .Values.apiKey.usernameKey }}
+            - name: OPENAPI_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.apiKey.secretName }}
+                  key: {{ .Values.apiKey.passwordKey }}
+            {{- end }}
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "sj-lab-openapi.fullname" . }}-config

@@ -63,6 +63,7 @@ helm template <chart-dir> | kubectl apply --dry-run=server -f -
 | `mapservice-rest` | `sj-lab-registry/mapservice-rest` | ClusterIP 8080 | Spring |
 | `postgres` | `postgis/postgis` | NodePort 30017 | DB `sjlab`, hostPath 볼륨 |
 | `postgres-qfield` | `postgis/postgis` | NodePort 30019 | DB `qfield`, hostPath 볼륨 |
+| `sj-lab-openapi` | `sj-lab-registry/sj-lab-openapi` | ClusterIP 8080 | Spring. 공개 API — 데이터는 mapservice-rest 중계. `apiKey.enabled=true` 로 켤 때만 `openapi-db-credentials` Secret 필요(없으면 기동 실패) |
 | `sj-lab-scheduler` | `sj-lab-registry/sj-lab-scheduler` | ClusterIP 8080 | Spring |
 | `sj-lab-webserver` | `nginx` | NodePort 32080 | hostPath로 정적 컨텐츠/인증서 마운트 |
 | `sj-qfieldsync` | `sj-lab-registry/sj-qfieldsync` | (내부용) | Python daemon |

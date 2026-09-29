@@ -1,0 +1,6 @@
+apiVersion: v2
+name: sj-lab-openapi
+description: A Helm chart for deploying the sj-lab public API service (catalog + relay + API keys)
+type: application
+version: 0.1.0
+appVersion: "1.0"

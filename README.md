@@ -47,6 +47,7 @@
 | `mapservice-rest` | 지도/시설물 GeoJSON API | ClusterIP (8080) | GIS 백엔드 서비스 |
 | `sj-lab-scheduler` | 공공데이터 수집 배치 | ClusterIP (8080) | 정기 크론 수집 배치 |
 | `sj-lab-authserver` | 중앙 인증 / SSO | ClusterIP (8080) | JWT 발급 및 위임 인증 |
+| `sj-lab-openapi` | 공개 API (카탈로그·중계·키) | ClusterIP (8080) | 게이트웨이 `/open-api/**`. 키 기능은 기본 꺼짐(`apiKey.enabled`) |
 | `fast-api-ai` | Python AI 마이크로서비스 | ClusterIP (80 -> 8000) | Uvicorn 기반 서빙 |
 | `sj-qfieldsync` | 현장 데이터 동기화 워커 | Deployment (단독 백그라운드) | 30초 주기 동기화 프로세스 |
 | `sj-lab-webserver` | NGINX 정적 웹서버 | NodePort (32080) | 정적 웹(허브, 지도) 서빙 |
