@@ -25,7 +25,7 @@ auth:
 # API 키·사용량 기능.
 #   enabled: false 면 DB 없이 뜨고 키 API 만 503, 공개 API 조회는 정상이다.
 #   켜기 전에 두 가지가 먼저 필요하다.
-#     1) 표 생성 — sj-lab-openapi 저장소의 db/openapi_api_key.sql, db/openapi_api_usage.sql (DB 담당자가 실행)
+#     1) 표 생성 — sj-lab 저장소의 db/api/openapi_api_key.sql, db/api/openapi_api_usage.sql (DB 담당자가 실행)
 #        표는 api 스키마에 만든다(api.openapi_api_key, api.openapi_api_usage).
 #     2) Secret 생성 — 값은 차트에 평문으로 적지 말 것
 #        kubectl create secret generic openapi-db-credentials -n sj-lab \
