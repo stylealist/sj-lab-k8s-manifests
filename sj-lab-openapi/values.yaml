@@ -33,7 +33,9 @@ auth:
 #          --from-literal=username='<계정>' --from-literal=password='<비밀번호>'
 #   enabled: true 인데 Secret 이 없으면 접속 주소가 비어 기동이 실패한다(의도된 동작).
 apiKey:
-  enabled: false
+  # 2026-09-30 켜짐. 표(api.openapi_api_key, api.openapi_api_usage)와
+  # Secret(openapi-db-credentials)이 모두 준비된 것을 확인한 뒤 올렸다.
+  enabled: true
   dailyQuota: 1000
   secretName: openapi-db-credentials
   urlKey: url
