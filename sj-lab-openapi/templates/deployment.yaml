@@ -37,6 +37,8 @@ spec:
               value: {{ .Values.auth.baseUrl | quote }}
             - name: OPENAPI_API_KEY_ENABLED
               value: {{ .Values.apiKey.enabled | quote }}
+            - name: OPENAPI_API_KEY_REQUIRED
+              value: {{ .Values.apiKey.required | quote }}
             - name: OPENAPI_API_KEY_DAILY_QUOTA
               value: {{ .Values.apiKey.dailyQuota | quote }}
             {{- if .Values.apiKey.enabled }}

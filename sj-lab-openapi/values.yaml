@@ -36,6 +36,10 @@ apiKey:
   # 2026-09-30 켜짐. 표(api.openapi_api_key, api.openapi_api_usage)와
   # Secret(openapi-db-credentials)이 모두 준비된 것을 확인한 뒤 올렸다.
   enabled: true
+  # 데이터 API(/v1/**)를 키 없이 부를 수 없게 한다(2026-09-30).
+  # false 로 되돌리면 키 없는 호출이 통과하고, 하루 한도가 키를 빼는 것만으로 우회된다.
+  # enabled: false 인데 required: true 면 데이터 API 가 503 이 되므로 함께 꺼야 한다.
+  required: true
   dailyQuota: 1000
   secretName: openapi-db-credentials
   urlKey: url
