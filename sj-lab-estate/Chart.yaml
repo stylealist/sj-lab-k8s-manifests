@@ -1,0 +1,6 @@
+apiVersion: v2
+name: sj-lab-estate
+description: A Helm chart for deploying the sj-lab real-estate transaction query service (read-only)
+type: application
+version: 0.1.0
+appVersion: "1.0"

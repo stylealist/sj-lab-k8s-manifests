@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sj-lab-estate.fullname" . }}
+  labels:
+    app: {{ include "sj-lab-estate.name" . }}
+  annotations:
+    configmap-checksum: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    service-checksum: {{ include (print $.Template.BasePath "/service.yaml") . | sha256sum }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "sj-lab-estate.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "sj-lab-estate.name" . }}
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ .Values.env.springProfile }}
+            - name: SPRING_CONFIG_LOCATION
+              value: {{ .Values.env.springConfigLocation }}
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Duser.timezone=Asia/Seoul"
+            - name: ESTATE_DB_POOL_SIZE
+              value: {{ .Values.db.poolSize | quote }}
+            # DB 접속값은 Secret 에서만 받는다(차트·이미지에 적지 않는다).
+            # optional: true — Secret 이 없어도 Pod 는 뜨고, 그때는 조회만 503 이며
+            # GET /estate/status 가 ready:false 로 답한다(의도된 동작. values.yaml 주석 참고).
+            - name: ESTATE_DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.db.secretName }}
+                  key: {{ .Values.db.urlKey }}
+                  optional: true
+            - name: ESTATE_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.db.secretName }}
+                  key: {{ .Values.db.usernameKey }}
+                  optional: true
+            - name: ESTATE_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.db.secretName }}
+                  key: {{ .Values.db.passwordKey }}
+                  optional: true
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "sj-lab-estate.fullname" . }}-config

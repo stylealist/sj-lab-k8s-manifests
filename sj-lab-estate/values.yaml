@@ -1,0 +1,41 @@
+image:
+  repository: sj-lab-registry.kr.ncr.ntruss.com/sj-lab-estate
+  # Jenkins 가 빌드 후 올려 커밋하는 값이다. 요청 없이 임의로 내리지 말 것.
+  tag: 1
+  pullSecret: ncp-registry-secret
+
+spring:
+  profile: prod
+
+service:
+  type: ClusterIP
+  port: 8080
+
+env:
+  springProfile: prod
+  springConfigLocation: "classpath:/,file:/app/config/"
+
+# 부동산 실거래 DB(estate 스키마) 접속. **조회 전용**이다 — 적재는 sj-lab-scheduler 가 한다.
+#
+#   Secret 을 optional 로 참조한다(없어도 Pod 가 뜬다). 이 서비스는 접속 정보가 없으면
+#   조회만 503(NOT_CONFIGURED) 이고 GET /estate/status 는 ready:false 로 답하도록 만들었다 —
+#   기동을 막으면 화면이 "준비되지 않았다"조차 알릴 수 없기 때문이다.
+#   그래서 Secret 이 아직 없어도 배포는 성공하고, 화면에 안내만 뜬다.
+#
+#   준비 순서
+#     1) 표 생성 — sj-lab 저장소의 db/estate/estate_apt.sql (DB 담당자가 실행)
+#     2) Secret 생성 — 값은 차트에 평문으로 적지 말 것
+#        kubectl create secret generic estate-db-credentials -n sj-lab \
+#          --from-literal=url='jdbc:postgresql://<호스트>:5432/sjlab' \
+#          --from-literal=username='<조회 전용 계정>' --from-literal=password='<비밀번호>'
+#     3) 조회 전용 계정을 쓸 것(쓰기 권한 계정·superuser 를 넣지 말 것).
+#        커넥션도 서비스가 readOnly 로 연다.
+db:
+  secretName: estate-db-credentials
+  urlKey: url
+  usernameKey: username
+  passwordKey: password
+  # 조회 전용이라 커넥션을 많이 쓸 필요가 없다.
+  poolSize: 5
+
+fullnameOverride: sj-lab-estate

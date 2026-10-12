@@ -1,0 +1,17 @@
+server:
+  # 컨테이너 포트와 맞춘다(기본값은 0 = 임의 포트).
+  port: 8080
+
+eureka:
+  client:
+    tls:
+      enabled: false
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: https://eureka.sj-lab.co.kr/eureka
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${spring.cloud.client.hostname}
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30

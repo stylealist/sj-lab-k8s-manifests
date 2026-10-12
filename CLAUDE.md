@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 저장소 개요
 
-sj-lab 프로젝트들을 위한 **쿠버네티스 배포 매니페스트(Helm 차트) 전용 저장소**입니다. 애플리케이션 소스 코드는 없고, 최상위 디렉터리 하나가 독립된 Helm 차트 하나에 대응합니다 (`apigateway/`, `dashboard/`, `discoveryserver/`, `fast-api-ai/`, `geoserver/`, `jenkins/`, `mapservice-rest/`, `postgres/`, `postgres-qfield/`, `sj-lab-scheduler/`, `sj-lab-webserver/`, `sj-qfieldsync/`, `argocd/`). 차트 간 공용 라이브러리 차트나 umbrella 차트는 없으며, 서로 독립적으로 배포됩니다.
+sj-lab 프로젝트들을 위한 **쿠버네티스 배포 매니페스트(Helm 차트) 전용 저장소**입니다. 애플리케이션 소스 코드는 없고, 최상위 디렉터리 하나가 독립된 Helm 차트 하나에 대응합니다 (`apigateway/`, `dashboard/`, `discoveryserver/`, `fast-api-ai/`, `geoserver/`, `jenkins/`, `mapservice-rest/`, `postgres/`, `postgres-qfield/`, `sj-lab-authserver/`, `sj-lab-openapi/`, `sj-lab-estate/`, `sj-lab-scheduler/`, `sj-lab-webserver/`, `sj-qfieldsync/`, `argocd/`). 차트 간 공용 라이브러리 차트나 umbrella 차트는 없으며, 서로 독립적으로 배포됩니다.
 
 ArgoCD가 이 저장소를 GitOps 소스로 사용해 클러스터에 동기화합니다(`automated.selfHeal: true`, `automated.prune: true`). Jenkins CI가 각 서비스 이미지를 빌드한 뒤 해당 차트의 `values.yaml`에 있는 `image.tag`를 자동으로 올려서 커밋합니다 (예: 커밋 메시지 `Update sj-qfieldsync image tag to 2 from Jenkins`). **이 자동 커밋 패턴 때문에 `image.tag`는 Jenkins가 관리하는 값으로 취급하고, 별도 요청 없이 임의로 낮추거나 되돌리지 마세요.**
 
@@ -43,7 +43,7 @@ helm template <chart-dir> | kubectl apply --dry-run=server -f -
 
 ## 보안 관련 주의사항
 
-차트가 참조하는 Secret(`ncp-registry-secret`, `qfield-credentials`, `auth-jwt-secret`, `auth-demo-credentials`)의 용도·필수 여부·확인 명령어는 총괄 저장소의 `C:\developer\workspace\sj-lab\docs\k8s-secrets.md`에 정리돼 있습니다. `secretKeyRef`/`pullSecret`을 추가·변경하면 그 문서도 함께 고치세요.
+차트가 참조하는 Secret(`ncp-registry-secret`, `qfield-credentials`, `auth-jwt-secret`, `auth-demo-credentials`, `openapi-db-credentials`, `estate-db-credentials`)의 용도·필수 여부·확인 명령어는 총괄 저장소의 `C:\developer\workspace\sj-lab\docs\k8s-secrets.md`에 정리돼 있습니다. `secretKeyRef`/`pullSecret`을 추가·변경하면 그 문서도 함께 고치세요.
 
 `postgres/values.yaml`, `postgres-qfield/values.yaml`에 DB 비밀번호가 **평문으로 커밋**돼 있습니다. 새로운 차트나 값을 추가할 때 이 패턴을 따라 하지 말고, 가능하면 Secret 리소스나 외부 시크릿 매니저 사용을 제안하세요. 기존 평문 값을 다룰 때도 대화나 커밋 메시지, 새로 만드는 문서에 값을 그대로 옮겨 적지 마세요.
 
@@ -63,6 +63,7 @@ helm template <chart-dir> | kubectl apply --dry-run=server -f -
 | `mapservice-rest` | `sj-lab-registry/mapservice-rest` | ClusterIP 8080 | Spring |
 | `postgres` | `postgis/postgis` | NodePort 30017 | DB `sjlab`, hostPath 볼륨 |
 | `postgres-qfield` | `postgis/postgis` | NodePort 30019 | DB `qfield`, hostPath 볼륨 |
+| `sj-lab-estate` | `sj-lab-registry/sj-lab-estate` | ClusterIP 8080 | Spring. 부동산 실거래 조회(estate 스키마 읽기 전용). `estate-db-credentials` Secret 을 **optional** 로 참조 — 없어도 뜨고 조회만 503(서비스가 그렇게 설계됨) |
 | `sj-lab-openapi` | `sj-lab-registry/sj-lab-openapi` | ClusterIP 8080 | Spring. 공개 API — 데이터는 mapservice-rest 중계. `apiKey.enabled=true` 로 켤 때만 `openapi-db-credentials` Secret 필요(없으면 기동 실패) |
 | `sj-lab-scheduler` | `sj-lab-registry/sj-lab-scheduler` | ClusterIP 8080 | Spring |
 | `sj-lab-webserver` | `nginx` | NodePort 32080 | hostPath로 정적 컨텐츠/인증서 마운트 |
