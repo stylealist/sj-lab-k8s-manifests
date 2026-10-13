@@ -22,16 +22,18 @@ env:
 #   기동을 막으면 화면이 "준비되지 않았다"조차 알릴 수 없기 때문이다.
 #   그래서 Secret 이 아직 없어도 배포는 성공하고, 화면에 안내만 뜬다.
 #
-#   준비 순서
-#     1) 표 생성 — sj-lab 저장소의 db/estate/estate_apt.sql (DB 담당자가 실행)
-#     2) Secret 생성 — 값은 차트에 평문으로 적지 말 것
-#        kubectl create secret generic estate-db-credentials -n sj-lab \
-#          --from-literal=url='jdbc:postgresql://<호스트>:5432/sjlab' \
-#          --from-literal=username='<조회 전용 계정>' --from-literal=password='<비밀번호>'
-#     3) 조회 전용 계정을 쓸 것(쓰기 권한 계정·superuser 를 넣지 말 것).
-#        커넥션도 서비스가 readOnly 로 연다.
+#   **2026-10-13: 새 Secret 을 만들지 않고 공개 API 의 openapi-db-credentials 를 그대로 쓴다.**
+#   같은 DB(sjlab)를 가리키고 키 이름(url·username·password)도 같아서 그대로 참조할 수 있다.
+#   대신 그 Secret 의 계정(openapi_svc)은 공개 API 용으로 만들어져 **estate 권한이 없으므로**,
+#   읽기 권한을 주는 SQL 을 한 번 실행해야 한다 — sj-lab/db/estate/estate_grant_openapi_svc.sql
+#   (실행 전에는 /estate/status 가 reason: CONNECT_FAILED 로 답하고 조회만 막힌다).
+#
+#   알고 쓸 점: 두 서비스가 DB 계정을 공유하게 되므로 **비밀번호를 바꾸면 둘 다 영향**을 받는다.
+#   계정을 분리하려면 전용 계정(db/estate/estate_read_role.sql 의 estate_read)을 만들고
+#   secretName 을 estate-db-credentials 로 되돌린 뒤 그 Secret 을 만들면 된다
+#   (만드는 스크립트: sj-lab/scripts/create-estate-db-secret.ps1).
 db:
-  secretName: estate-db-credentials
+  secretName: openapi-db-credentials
   urlKey: url
   usernameKey: username
   passwordKey: password
