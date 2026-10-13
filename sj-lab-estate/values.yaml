@@ -1,7 +1,7 @@
 image:
   repository: sj-lab-registry.kr.ncr.ntruss.com/sj-lab-estate
   # Jenkins 가 빌드 후 올려 커밋하는 값이다. 요청 없이 임의로 내리지 말 것.
-  tag: 4
+  tag: 5
   pullSecret: ncp-registry-secret
 
 spring:
