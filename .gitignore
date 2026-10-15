@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### 운영 키가 든 Secret 사본 (이 저장소는 public) — 빈 값 틀만 커밋한다 ###
+secrets/*.yaml
+!secrets/*.example.yaml
