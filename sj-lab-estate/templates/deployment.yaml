@@ -28,8 +28,11 @@ spec:
               value: {{ .Values.env.springProfile }}
             - name: SPRING_CONFIG_LOCATION
               value: {{ .Values.env.springConfigLocation }}
+            # -XX:-UseBASE64Intrinsics : CVE-2026-114938(Java4Shell) 임시 완화 — OpenJDK 17.0.6+ x86-64(AVX-512 VBMI)
+            # 의 Base64 디코드 인트린식 결함. **패치된 JDK 이미지로 재빌드하면 이 옵션은 빼는 것이 맞다**(Base64 성능).
+            # 같은 이름의 환경변수를 따로 또 두면 뒤엣것만 남아 타임존이 날아가므로 한 값에 이어 붙인다.
             - name: JAVA_TOOL_OPTIONS
-              value: "-Duser.timezone=Asia/Seoul"
+              value: "-Duser.timezone=Asia/Seoul -XX:-UseBASE64Intrinsics"
             - name: ESTATE_DB_POOL_SIZE
               value: {{ .Values.db.poolSize | quote }}
             # DB 접속값은 Secret 에서만 받는다(차트·이미지에 적지 않는다).
